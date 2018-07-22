@@ -22,7 +22,7 @@ public class Object2Map {
             try {
                 value = field.get(object);
             } catch (IllegalAccessException e) {
-                log.error("Object 2 Map exception KeyName:" + field.getName(),e);
+                log.error("Object 2 Map exception name:{}, error:{}:" + field.getName(),e);
                 e.printStackTrace();
             }
 

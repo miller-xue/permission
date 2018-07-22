@@ -10,11 +10,7 @@ public interface SysConstans {
      */
     String EXCEPTION_MESSAGE_KEY = "msg";
 
-    /**
-     * 系统异常错误信息
-     */
-    String DEFAULT_EXCEPTION_MSG = "系统异常";
-
+    String EXCEPTION_CODE_KEY = "code";
 
     /**
      * ModelAndView 返回 json字符串的 viewname 是springmvc.xml中 <bean>转换器中的id

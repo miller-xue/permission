@@ -21,29 +21,10 @@ public class Result<T> {
 
     private T data;
 
+    private Integer code;
+
     public Result(boolean result) {
         this.result = result;
     }
 
-
-    public static Result buildSuccess(Object data, String msg) {
-        Result result = new Result(true);
-        result.setData(data);
-        result.setMsg(msg);
-        return result;
-    }
-
-    public static Result buildSuccess(Object data) {
-        return buildSuccess(data, null);
-    }
-
-    public static Result buildSuccess() {
-        return buildSuccess(null, null);
-    }
-
-    public static Result buildFail(String msg) {
-        Result result = new Result(false);
-        result.setMsg(msg);
-        return result;
-    }
 }

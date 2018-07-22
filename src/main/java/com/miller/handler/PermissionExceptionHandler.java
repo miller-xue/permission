@@ -1,10 +1,13 @@
 package com.miller.handler;
 
-import com.miller.Exception.PermissionJsonException;
-import com.miller.Exception.PermissionPageException;
+import com.miller.Exception.JsonException;
+import com.miller.Exception.PageException;
+import com.miller.Exception.ParamException;
 import com.miller.common.Result;
 import com.miller.constant.SysConstans;
+import com.miller.enums.ResultEnum;
 import com.miller.util.Object2Map;
+import com.miller.util.ResultUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -16,6 +19,8 @@ import javax.servlet.http.HttpServletRequest;
 
 /**
  * Created by miller on 2018/7/21
+ * @author Miller
+ * 系统异常处理类
  */
 @ControllerAdvice
 @Slf4j
@@ -27,11 +32,12 @@ public class PermissionExceptionHandler {
      * @param e
      * @return
      */
-    @ExceptionHandler(value = PermissionJsonException.class)
+    @ExceptionHandler(value = JsonException.class)
     @ResponseBody
-    public Result handlerPermissionJsonException(PermissionJsonException e, HttpServletRequest request) {
+    public Result handlerPermissionJsonException(JsonException e, HttpServletRequest request) {
         log.error("json exception, url:" + request.getRequestURL().toString(), e);
-        return Result.buildFail(e.getMessage());
+        // 把错误信息和错误码返回调用者
+        return ResultUtil.buildFail(e.getMessage(),e.getCode());
     }
 
 
@@ -42,14 +48,32 @@ public class PermissionExceptionHandler {
      * @param model
      * @return
      */
-    @ExceptionHandler(value = PermissionPageException.class)
-    public String handlerPermissionPageException(PermissionPageException e, Model model, HttpServletRequest request) {
+    @ExceptionHandler(value = PageException.class)
+    public String handlerPermissionPageException(PageException e, Model model, HttpServletRequest request) {
         model.addAttribute(SysConstans.EXCEPTION_MESSAGE_KEY, e.getMessage());
+        model.addAttribute(SysConstans.EXCEPTION_CODE_KEY, e.getCode());
         log.error("page exception, url:" + request.getRequestURL().toString(), e);
         return "exception";
     }
 
+    /**
+     * 参数异常的处理
+     * @param e
+     * @param request
+     * @return
+     */
+    @ExceptionHandler(value = ParamException.class)
+    @ResponseBody
+    public Result handleParamException(ParamException e, HttpServletRequest request) {
+        return ResultUtil.buildFail(e.getData(),e.getMessage(),e.getCode());
+    }
 
+    /**
+     *
+     * @param e
+     * @param request
+     * @return
+     */
     @ExceptionHandler(value = Exception.class)
     public ModelAndView handleException(Exception e, HttpServletRequest request) {
         ModelAndView modelAndView = null;
@@ -57,7 +81,8 @@ public class PermissionExceptionHandler {
         if (isAjax(request)) {
             viewName = SysConstans.JSON_VIEW_NAME;
         }
-        return new ModelAndView(viewName, Object2Map.object2Map(Result.buildFail(e.getMessage())));
+        log.error("exception:{} ",e);
+        return new ModelAndView(viewName, Object2Map.object2Map(ResultUtil.buildFail(ResultEnum.INNER_ERROR)));
     }
 
 
