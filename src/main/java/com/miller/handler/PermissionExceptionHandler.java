@@ -58,14 +58,15 @@ public class PermissionExceptionHandler {
 
     /**
      * 参数异常的处理
+     *
      * @param e
      * @param request
      * @return
      */
     @ExceptionHandler(value = ParamException.class)
     @ResponseBody
-    public Result handleParamException(ParamException e, HttpServletRequest request) {
-        return ResultUtil.buildFail(e.getData(),e.getMessage(),e.getCode());
+    public Result handleParamException(ParamException e) {
+        return ResultUtil.buildFail(e.getData(), e.getMessage(), e.getCode());
     }
 
     /**

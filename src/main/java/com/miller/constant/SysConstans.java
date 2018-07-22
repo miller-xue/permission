@@ -16,4 +16,10 @@ public interface SysConstans {
      * ModelAndView 返回 json字符串的 viewname 是springmvc.xml中 <bean>转换器中的id
      */
     String JSON_VIEW_NAME = "jsonView";
+
+
+    /**
+     * 父节点的根节点
+     */
+    Integer ROOT_PARENT_ID = 0;
 }

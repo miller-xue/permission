@@ -28,4 +28,8 @@ public class ParamException extends PermissionException {
         super(resultEnum);
         this.data = data;
     }
+
+    public ParamException(ResultEnum resultEnum) {
+        super(resultEnum);
+    }
 }

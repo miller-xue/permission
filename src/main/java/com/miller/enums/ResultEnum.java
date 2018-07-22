@@ -17,12 +17,11 @@ public enum ResultEnum {
 
     SUCCESS(0, "成功"),
 
-    PARAM_ERROR(1, "参数不正确")
+    PARAM_ERROR(1, "参数不正确"),
+
+    DEPT_NAME_EXITS(-1, "同一级别下存在相同名称的部门")
     ;
 
     private Integer code;
-
     private String msg;
-
-
 }
