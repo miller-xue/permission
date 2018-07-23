@@ -3,6 +3,7 @@ package com.miller.util;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 /**
@@ -11,6 +12,29 @@ import java.lang.reflect.Method;
  */
 @Slf4j
 public class ConvertUtil {
+
+    /**
+     * 执行指定目标对象指定属性的set方法
+     * @param target 目标对象
+     * @param attributeName 属性名
+     * @param args 设置的值
+     * @return 无
+     */
+    public static void invokeSetMethod(Object target, String attributeName, Object... args) {
+        if (target == null || StringUtils.isBlank(attributeName)) {
+            throw new NullPointerException("目标类,或属性名不能为空");
+        }
+        String methodName = new StringBuffer("set").append(SysUtil.toUpperCaseFirstOne(attributeName)).toString();
+        try {
+            Method method = getDeclaredMethod(target, methodName, getDeclaredField(target, attributeName).getType());
+            method.invoke(target, args);
+        } catch (Exception e) {
+            log.error("invokeSetMethod error target:{}, attributeName:{}, args:[] error:{}", JsonMapper.obj2String(target), attributeName, JsonMapper.obj2String(args), e);
+        }
+        return;
+    }
+
+
 
     /**
      * 指定目标对象指定属性的get方法,并返回值
@@ -22,7 +46,7 @@ public class ConvertUtil {
         if (target == null || StringUtils.isBlank(attributeName)) {
             return null;
         }
-        String methodName = "get" + (attributeName.toCharArray()[0] + "").toUpperCase() + attributeName.substring(1);
+        String methodName = new StringBuffer("get").append(SysUtil.toUpperCaseFirstOne(attributeName)).toString();
         try {
             Method method = getDeclaredMethod(target,methodName);
             return method.invoke(target);
@@ -30,6 +54,26 @@ public class ConvertUtil {
             log.error("invokeGetMethod error, target:{} attributeName:{} error:{} ", JsonMapper.obj2String(target), attributeName, e);
             return null;
         }
+    }
+
+    /**
+     * 循环向上转型, 获取对象的 指定方法的Field
+     * @param target : 子类对象
+     * @param fieldName : 子父类中属性名
+     * @return 父类中的方法对象
+     */
+    private static Field getDeclaredField(Object target, String fieldName) {
+        if (target == null || StringUtils.isBlank(fieldName)) {
+            throw new NullPointerException("target or fieldName 不能为空");
+        }
+        for(Class<?> clazz = target.getClass(); clazz != Object.class; clazz = clazz.getSuperclass()) {
+            try {
+                return clazz.getDeclaredField(fieldName);
+            } catch (NoSuchFieldException e) {
+                continue;
+            }
+        }
+        return null;
     }
 
 
@@ -53,4 +97,6 @@ public class ConvertUtil {
         }
         return null;
     }
+
+
 }

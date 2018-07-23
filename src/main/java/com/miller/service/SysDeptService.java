@@ -1,7 +1,10 @@
 package com.miller.service;
 
 import com.miller.Exception.ParamException;
+import com.miller.dto.DeptLevelDto;
 import com.miller.param.DeptParam;
+
+import java.util.List;
 
 /**
  * Created by miller on 2018/7/22
@@ -16,4 +19,18 @@ public interface SysDeptService {
      * @throws ParamException 参数校验异常
      */
     void save(DeptParam param)throws ParamException;
+
+    /**
+     * 查询一个部门树
+     *
+     * @return
+     */
+    List<DeptLevelDto> deptTree();
+
+    /**
+     * 更新一个部门,如何父部门
+     * @param param
+     * @throws ParamException
+     */
+    void update(DeptParam param) throws ParamException;
 }

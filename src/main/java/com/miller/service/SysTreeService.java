@@ -19,7 +19,9 @@ import java.util.List;
 /**
  * Created by miller on 2018/7/22
  * @author Miller
+ * 树的泛型方法已经实现,TreeBuilder
  */
+@Deprecated
 @Service
 public class SysTreeService {
 

@@ -6,8 +6,8 @@ import com.miller.Exception.ParamException;
 import com.miller.common.Result;
 import com.miller.constant.SysConstans;
 import com.miller.enums.ResultEnum;
-import com.miller.util.Object2Map;
 import com.miller.util.ResultUtil;
+import com.miller.util.SysUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -83,7 +83,7 @@ public class PermissionExceptionHandler {
             viewName = SysConstans.JSON_VIEW_NAME;
         }
         log.error("exception:{} ",e);
-        return new ModelAndView(viewName, Object2Map.object2Map(ResultUtil.buildFail(ResultEnum.INNER_ERROR)));
+        return new ModelAndView(viewName, SysUtil.object2Map(ResultUtil.buildFail(ResultEnum.INNER_ERROR)));
     }
 
 
