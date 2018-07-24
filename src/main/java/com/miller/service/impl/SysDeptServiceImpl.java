@@ -2,6 +2,7 @@ package com.miller.service.impl;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.miller.Exception.JsonException;
 import com.miller.Exception.ParamException;
 import com.miller.dao.SysDeptMapper;
 import com.miller.dto.DeptLevelDto;
@@ -70,20 +71,36 @@ public class SysDeptServiceImpl implements SysDeptService {
         // 1.校验当前部门是否存在
         SysDept before = mapper.selectByPrimaryKey(param.getId());
         Preconditions.checkNotNull(before, "待更新的部门不存在");
+        // 没有修改部门
+
+        // 更新之后的值
+        SysDept after = new SysDept();
+        BeanUtils.copyProperties(param, after);
+        after.setOperator("system");
+        after.setOperatorIp("127.0.0.1");
+        after.setOperatorTime(new Date());
+        //没有更新父节点
+        if (before.getParentId().equals(param.getParentId())) {
+            after.setLevel(before.getLevel());
+            mapper.updateByPrimaryKey(after);
+            return;
+        }else{
+            after.setLevel(LevelUtil.caculateLevel(getLevel(after.getParentId()), after.getParentId()));
+        }
+
+        // 2.检查父部门是否存在
+        if (param.getParentId().equals(0)) {
+            SysDept newParent = mapper.selectByPrimaryKey(param.getParentId());
+            Preconditions.checkNotNull(newParent, "待更新的父部门不存在");
+        }
+
 
         // 2.检查部门名称是否重复
         if (checkExist(param.getParentId(), param.getName(), param.getId())) {
             throw new ParamException(ResultEnum.DEPT_NAME_EXITS);
         }
 
-
         // 更新之后的值
-        SysDept after = new SysDept();
-        BeanUtils.copyProperties(param, after);
-        after.setLevel(LevelUtil.caculateLevel(getLevel(after.getParentId()), after.getParentId()));
-        after.setOperator("system");
-        after.setOperatorIp("127.0.0.1");
-        after.setOperatorTime(new Date());
         updateWithChild(before, after);
     }
 
@@ -92,19 +109,20 @@ public class SysDeptServiceImpl implements SysDeptService {
 
         String newLevelPrefix = after.getLevel();
         String oldLevelPrefix = before.getLevel();
-        if (!newLevelPrefix.equals(oldLevelPrefix)) {
-            List<SysDept> childList = mapper.getChildDeptListByLevel(oldLevelPrefix);
-            if (CollectionUtils.isNotEmpty(childList)) {
-                for (SysDept dept : childList) {
-                    String level = dept.getLevel();
-                    if (level.indexOf(oldLevelPrefix) == 0) {
-                        level = newLevelPrefix + level.substring(oldLevelPrefix.length());
-                        dept.setLevel(level);
-                    }
+
+        // 查询当前待更新节点下所有子部门
+        List<SysDept> childList = mapper.getChildDeptListByLevel(oldLevelPrefix);
+        if (CollectionUtils.isNotEmpty(childList)) {
+            for (SysDept dept : childList) {
+                String level = dept.getLevel();
+                if (level.indexOf(oldLevelPrefix) == 0) {
+                    level = newLevelPrefix + level.substring(oldLevelPrefix.length());
+                    dept.setLevel(level);
                 }
-                mapper.batchUpdateLevel(childList);
             }
+            mapper.batchUpdateLevel(childList);
         }
+
 
         mapper.updateByPrimaryKey(after);
     }

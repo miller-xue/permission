@@ -169,8 +169,7 @@
       AND parent_id = #{parentId}
     </if>
     <if test="id != null">
-      AND id !
-      = #{id}
+      AND id != #{id}
     </if>
   </select>
 

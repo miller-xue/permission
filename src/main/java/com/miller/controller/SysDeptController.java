@@ -26,6 +26,12 @@ public class SysDeptController {
     @Autowired
     private SysDeptService deptService;
 
+
+    @RequestMapping("/page")
+    public String page() {
+        return "dept";
+    }
+
     /**
      * 保存一个部门
      *
