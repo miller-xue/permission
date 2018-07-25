@@ -186,6 +186,7 @@
                         console.log(rendered)
                         $("#deptList").html(rendered);
                         recursiveRenderDept(result.data);
+                        bindDeptClick();
                     }else {
                         showMessage("加载部门列表", result.msg, false);
                     }
@@ -206,9 +207,16 @@
             }
             
         }
-        
+
         // 绑定部门的点击事件
         function bindDeptClick() {
+            $(".dept-name").click(function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                var deptId = $(this).attr("data-id");
+                HandleDeptSelected(deptId);
+            });
+
             $(".dept-delete").click(function (e) {
                 e.preventDefault();
                 e.stopPropagation();
@@ -220,18 +228,14 @@
                     console.log("delete depe:" + deptName);
                 }
             });
-            $(".dept-name").click(function (e) {
-                e.preventDefault();
-                e.stopPropagation();
-                var deptId = $(this).attr("data-id");
-                HandleDeptSelected(deptId);
-            });
 
-            $(".dept-add").click(function (e) {
+
+            $(".dept-edit").click(function (e) {
                 e.preventDefault();
                 e.stopPropagation();
                 var deptId = $(this).attr("data-id");
-                $("#dialog-dept-forml").dialog({
+
+                $("#dialog-dept-form").dialog({
                     model: true,
                     title: '编辑部门',
                     open: function(event , ui) {
@@ -240,7 +244,7 @@
                         recursiveRenderDeptSelect(deptList , 1);
                         $("#deptForm")[0].reset();
                         $("#parentId").html(optionStr);
-                        $("deptId").val(deptId);
+                        $("#deptId").val(deptId);
                         var targetDept = deptMap[deptId];
                         if(targetDept) {
                             $("#parentId").val(targetDept.parentId)
@@ -266,25 +270,8 @@
             })
             
         }
-        function HandleDeptSelected(deptId) {
-            if(lastClickDeptId == -1) {
-                var lastDept = $("#dept_" + lastClickDeptId + " .dd2-content: first");
-                lastDept.removeClass("btn-yellow");
-                lastDept.removeClass("no-hover");
-            }
-            var currentDept = $("#dept_" + deptId + " .dd2-content: first");
-            currentDept.addClass("btn-yellow");
-            currentDept.addClass("no-hover");
-            lastClickDeptId = deptId;
-            loadUserList(deptId)
-        }
-        function loadUserList(deptId) {
-            //TODO
-        }
-
-
         $(".dept-add").click(function () {
-            $("#dialog-dept-forml").dialog({
+            $("#dialog-dept-form").dialog({
                 model: true,
                 title: '新增部门',
                 open: function(event , ui) {
@@ -309,6 +296,24 @@
                 }
             });
         });
+        function HandleDeptSelected(deptId) {
+            if(lastClickDeptId != -1) {
+                var lastDept = $("#dept_" + lastClickDeptId + " .dd2-content: first");
+                lastDept.removeClass("btn-yellow");
+                lastDept.removeClass("no-hover");
+            }
+            var currentDept = $("#dept_" + deptId + " .dd2-content: first");
+            currentDept.addClass("btn-yellow");
+            currentDept.addClass("no-hover");
+            lastClickDeptId = deptId;
+            loadUserList(deptId)
+        }
+        function loadUserList(deptId) {
+            //TODO
+        }
+
+
+
 
         function recursiveRenderDeptSelect(deptList,level) {
             level = level | 0;

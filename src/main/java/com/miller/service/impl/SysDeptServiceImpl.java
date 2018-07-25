@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.miller.Exception.JsonException;
 import com.miller.Exception.ParamException;
+import com.miller.constant.SysConstans;
 import com.miller.dao.SysDeptMapper;
 import com.miller.dto.DeptLevelDto;
 import com.miller.enums.ResultEnum;
@@ -67,31 +68,29 @@ public class SysDeptServiceImpl implements SysDeptService {
     public void update(DeptParam param) throws ParamException {
         // 1.参数校验
         BeanValidator.check(param);
-
         // 1.校验当前部门是否存在
         SysDept before = mapper.selectByPrimaryKey(param.getId());
         Preconditions.checkNotNull(before, "待更新的部门不存在");
-        // 没有修改部门
-
-        // 更新之后的值
-        SysDept after = new SysDept();
-        BeanUtils.copyProperties(param, after);
-        after.setOperator("system");
-        after.setOperatorIp("127.0.0.1");
-        after.setOperatorTime(new Date());
+        // 2.更新之后的值
+        SysDept after = param2Model(param);
         //没有更新父节点
         if (before.getParentId().equals(param.getParentId())) {
-            after.setLevel(before.getLevel());
-            mapper.updateByPrimaryKey(after);
+            mapper.updateByPrimaryKeySelective(after);
             return;
-        }else{
-            after.setLevel(LevelUtil.caculateLevel(getLevel(after.getParentId()), after.getParentId()));
         }
-
+        // 父节点 == 当前待更新对象
+        if (after.getParentId().equals(after.getId())) {
+            throw new ParamException(ResultEnum.DEPT_PARENT_ID_NOT_EQUALS_ID);
+        }
         // 2.检查父部门是否存在
-        if (param.getParentId().equals(0)) {
-            SysDept newParent = mapper.selectByPrimaryKey(param.getParentId());
-            Preconditions.checkNotNull(newParent, "待更新的父部门不存在");
+        if (!after.getParentId().equals(SysConstans.ROOT_PARENT_ID)) {
+            SysDept newParent = mapper.selectByPrimaryKey(after.getParentId());
+            if (newParent == null) {
+                throw new ParamException(ResultEnum.DEPT_PARENT_NOT_EXIT);
+            }
+            if (newParent.getLevel().indexOf(before.getLevel()) == 0 && newParent.getLevel().length() > before.getLevel().length()) {
+                throw new ParamException(ResultEnum.DEPT_PPARENT_NOT_CHILD);
+            }
         }
 
 
@@ -99,7 +98,7 @@ public class SysDeptServiceImpl implements SysDeptService {
         if (checkExist(param.getParentId(), param.getName(), param.getId())) {
             throw new ParamException(ResultEnum.DEPT_NAME_EXITS);
         }
-
+        after.setLevel(LevelUtil.caculateLevel(getLevel(after.getParentId()), after.getParentId()));
         // 更新之后的值
         updateWithChild(before, after);
     }
@@ -122,8 +121,6 @@ public class SysDeptServiceImpl implements SysDeptService {
             }
             mapper.batchUpdateLevel(childList);
         }
-
-
         mapper.updateByPrimaryKey(after);
     }
 
@@ -145,5 +142,14 @@ public class SysDeptServiceImpl implements SysDeptService {
             return null;
         }
         return dept.getLevel();
+    }
+
+    public SysDept param2Model(DeptParam param) {
+        SysDept after = new SysDept();
+        BeanUtils.copyProperties(param, after);
+        after.setOperator("system");
+        after.setOperatorIp("127.0.0.1");
+        after.setOperatorTime(new Date());
+        return after;
     }
 }

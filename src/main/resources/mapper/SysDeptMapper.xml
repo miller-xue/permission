@@ -149,12 +149,12 @@
     SELECT
     <include refid="Base_Column_List" />
     from sys_dept
-    where level like #{level} || '.%'
+    where level like CONCAT('${level}','.%')
     ORDER BY parent_id,seq
   </select>
   
   <update id="batchUpdateLevel" parameterType="map">
-    <foreach collection="sysDeptList" item="sysDept" separator=";">
+    <foreach collection="sysDeptList" item="sysDept">
       UPDATE sys_dept
       set level = #{sysDept.level}
       where id = #{sysDept.id}

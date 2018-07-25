@@ -19,7 +19,17 @@ public enum ResultEnum {
 
     PARAM_ERROR(1, "参数不正确"),
 
-    DEPT_NAME_EXITS(-1, "同一级别下存在相同名称的部门")
+    DEPT_NAME_EXITS(2, "同一级别下存在相同名称的部门"),
+
+    DEPT_PARENT_NOT_EXIT(5, "待更新的父部门不存在"),
+
+    DEPT_PPARENT_NOT_CHILD(3,"父节点不能是当前部门的子节点"),
+
+    DEPT_PARENT_ID_NOT_EQUALS_ID(4,"当前节点的父节点ID不能是自己"),
+
+
+    USER_TELEPHONE_EXIST(6, "电话已被占用"),
+    USER_EMAIL_EXIST(7,"邮箱已被占用")
     ;
 
     private Integer code;
