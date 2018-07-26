@@ -89,7 +89,7 @@ public class SysDeptServiceImpl implements SysDeptService {
                 throw new ParamException(ResultEnum.DEPT_PARENT_NOT_EXIT);
             }
             if (newParent.getLevel().indexOf(before.getLevel()) == 0 && newParent.getLevel().length() > before.getLevel().length()) {
-                throw new ParamException(ResultEnum.DEPT_PPARENT_NOT_CHILD);
+                throw new ParamException(ResultEnum.DEPT_PARENT_NOT_CHILD);
             }
         }
 

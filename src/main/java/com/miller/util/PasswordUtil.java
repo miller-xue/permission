@@ -23,19 +23,17 @@ public class PasswordUtil {
     };
 
 
-    public static synchronized String randomPassword() {
+    public static String randomPassword() {
         StringBuffer stringBuffer = new StringBuffer();
         Random random = new Random(System.currentTimeMillis());
-
-        boolean falg = false;
+        // 生成8 - 11 位密码
         int length = random.nextInt(3) + 8;
         for (int i = 0 ; i < length ; i ++) {
-            if (falg) {
+            if (random.nextBoolean()) {
                 stringBuffer.append(num[random.nextInt(num.length)]);
             }else {
                 stringBuffer.append(word[random.nextInt(word.length)]);
             }
-            falg = !falg;
         }
         return stringBuffer.toString();
     }

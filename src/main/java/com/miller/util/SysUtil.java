@@ -20,9 +20,11 @@ public class SysUtil {
      * @return
      */
     public static Map<String, Object> object2Map(Object object) {
-        Map<String, Object> result = new HashMap<String, Object>();
+        if (object == null) {
+            return new HashMap<String, Object>(0);
+        }
         Field[] declaredFields = object.getClass().getDeclaredFields();
-
+        Map<String, Object> result = new HashMap<String, Object>(declaredFields.length);
         for (Field field : declaredFields) {
             String attrName = field.getName();
             Object value = ConvertUtil.invokeGetMethod(object, attrName);

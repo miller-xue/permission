@@ -1,5 +1,6 @@
 package com.miller.service;
 
+import com.miller.model.SysUser;
 import com.miller.param.UserParam;
 
 /**
@@ -8,4 +9,8 @@ import com.miller.param.UserParam;
 public interface SysUserService {
 
     public void save(UserParam param);
+
+    public void update(UserParam param);
+
+    public SysUser findByKeyword(String keyword);
 }
