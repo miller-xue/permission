@@ -161,4 +161,29 @@
       operator_ip = #{operatorIp,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
+
+  <select id="findByKeyword" parameterType="string" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List"/>
+    FROM sys_user
+    where telephone = #{keyword}
+    OR mail = #{keyword}
+  </select>
+
+
+  <select id="countByMail" parameterType="map" resultType="int">
+    select count(1)
+    from sys_user
+    where mail = #{mail}
+    <if test="id != null">
+      and id != #{id}
+    </if>
+  </select>
+  <select id="countByTelephone" parameterType="map" resultType="int">
+    select count(1)
+    from sys_user
+    where telephone = #{telephone}
+    <if test="id != null">
+      and id != #{id}
+    </if>
+  </select>
 </mapper>

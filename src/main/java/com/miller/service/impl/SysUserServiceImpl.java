@@ -66,15 +66,15 @@ public class SysUserServiceImpl implements SysUserService {
     }
 
     public SysUser findByKeyword(String keyword) {
-        return null;
+        return userMapper.findByKeyword(keyword);
     }
 
 
     public boolean checkEmailExist(String mail, Integer userId) {
-        return false;
+        return userMapper.countByMail(mail, userId) > 0;
     }
-    public boolean checkTelephoneExist(String mail, Integer userId) {
-        return false;
+    public boolean checkTelephoneExist(String telephone, Integer userId) {
+        return userMapper.countByTelephone(telephone,userId) > 0;
     }
 
     private SysUser param2SysUser(UserParam param) {

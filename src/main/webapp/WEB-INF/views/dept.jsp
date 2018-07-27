@@ -3,6 +3,7 @@
 <head>
     <title>部门管理</title>
     <jsp:include page="/common/backend_common.jsp"/>
+    <jsp:include page="/common/page.jsp"/>
 </head>
 <body class="no-skin" youdao="bind" style="background: white">
 <input id="gritter-light" checked="" type="checkbox" class="ace ace-switch ace-switch-5"/>
@@ -310,10 +311,30 @@
         }
         function loadUserList(deptId) {
             //TODO
+            var pageSize = $("#pageSize").val();
+            var url = "/sys/user/list?deptId=" + deptId;
+            var pageNo = $("#userPage .pageNo").val() | 1;
+            $.ajax({
+                url: url,
+                data: {
+                    pageSize: pageSize,
+                    pageNo: pageNo
+                },
+                success: function (result) {
+                    randerUserListAndPage(result, url);
+                }
+            });
+
         }
 
+        function randerUserListAndPage(result,url) {
+            if(result.result) {
+                if(result.data.total > 0) {
+                    var rendered = Mustache
+                }
+            }
 
-
+        }
 
         function recursiveRenderDeptSelect(deptList,level) {
             level = level | 0;
