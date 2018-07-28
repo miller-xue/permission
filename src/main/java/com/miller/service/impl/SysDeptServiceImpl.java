@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.miller.Exception.JsonException;
 import com.miller.Exception.ParamException;
+import com.miller.common.RequestHolder;
 import com.miller.constant.SysConstans;
 import com.miller.dao.SysDeptMapper;
 import com.miller.dto.DeptLevelDto;
@@ -12,6 +13,7 @@ import com.miller.model.SysDept;
 import com.miller.param.DeptParam;
 import com.miller.service.SysDeptService;
 import com.miller.util.BeanValidator;
+import com.miller.util.IpUtil;
 import com.miller.util.LevelUtil;
 import com.miller.util.TreeBuilder;
 import org.apache.commons.collections.CollectionUtils;
@@ -40,15 +42,8 @@ public class SysDeptServiceImpl implements SysDeptService {
         if (checkExist(param.getParentId(), param.getName(), param.getId())) {
             throw new ParamException(ResultEnum.DEPT_NAME_EXITS);
         }
-        SysDept dept = new SysDept();
-        BeanUtils.copyProperties(param, dept);
+        SysDept dept = param2Model(param);
         dept.setLevel(LevelUtil.caculateLevel(getLevel(param.getParentId()), dept.getParentId()));
-
-        //TODO
-        dept.setOperator("system");
-        dept.setOperatorIp("127.0.0.1");
-        dept.setOperatorTime(new Date());
-
         mapper.insertSelective(dept);
     }
 
@@ -147,8 +142,8 @@ public class SysDeptServiceImpl implements SysDeptService {
     public SysDept param2Model(DeptParam param) {
         SysDept after = new SysDept();
         BeanUtils.copyProperties(param, after);
-        after.setOperator("system");
-        after.setOperatorIp("127.0.0.1");
+        after.setOperator(RequestHolder.getCurrentUser().getUsername());
+        after.setOperatorIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
         after.setOperatorTime(new Date());
         return after;
     }

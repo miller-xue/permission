@@ -27,4 +27,8 @@
     <root level="INFO">
         <appender-ref ref="STDOUT" />
     </root>
+    <logger name="dao" level="DEBUG">
+        <!--daoFILE为实际定义的appender-->
+        <appender-ref ref="daoFILE" />
+    </logger>
 </configuration>

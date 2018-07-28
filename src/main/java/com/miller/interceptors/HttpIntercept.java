@@ -1,5 +1,6 @@
 package com.miller.interceptors;
 
+import com.miller.common.RequestHolder;
 import com.miller.util.JsonMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -45,6 +46,7 @@ public class HttpIntercept extends HandlerInterceptorAdapter {
 //        String url = request.getRequestURL().toString();
 //        Map parameterMap = request.getParameterMap();
 //        log.info("request postHandle  url:{}, param:{}", url, JsonMapper.obj2String(parameterMap));
+        removeThreadLocalInfo();
     }
 
     /**
@@ -60,5 +62,11 @@ public class HttpIntercept extends HandlerInterceptorAdapter {
         String url = request.getRequestURL().toString();
         Map parameterMap = request.getParameterMap();
         log.info("request Completion  url:{}, param:{}", url, JsonMapper.obj2String(parameterMap));
+
+        removeThreadLocalInfo();
+    }
+
+    public void removeThreadLocalInfo() {
+        RequestHolder.remove();
     }
 }

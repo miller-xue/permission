@@ -12,10 +12,6 @@
     <param-name>contextConfigLocation</param-name>
     <param-value>classpath:spring/spring.xml</param-value>
   </context-param>
-  <context-param>
-    <param-name/>
-    <param-value/>
-  </context-param>
   <!-- spring 配置文件 -->
   <listener>
     <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
@@ -40,6 +36,17 @@
     <filter-name>encodingFilter</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
+  <!-- 登陆过滤器 -->
+  <filter>
+    <filter-name>LoginFilter</filter-name>
+    <filter-class>com.miller.filter.LoginFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>LoginFilter</filter-name>
+    <url-pattern>/sys/*</url-pattern>
+    <url-pattern>/admin/*</url-pattern>
+  </filter-mapping>
+
 
   <!-- spring mvc  -->
   <servlet>

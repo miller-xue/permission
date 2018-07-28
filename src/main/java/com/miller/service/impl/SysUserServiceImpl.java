@@ -1,21 +1,25 @@
 package com.miller.service.impl;
 
 import com.miller.Exception.ParamException;
+import com.miller.common.PageQuery;
+import com.miller.common.PageResult;
+import com.miller.common.RequestHolder;
 import com.miller.dao.SysUserMapper;
 import com.miller.enums.ResultEnum;
 import com.miller.model.SysUser;
 import com.miller.param.UserParam;
 import com.miller.service.SysUserService;
 import com.miller.util.BeanValidator;
+import com.miller.util.IpUtil;
 import com.miller.util.MD5Util;
 import com.miller.util.PasswordUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by miller on 2018/7/25
@@ -69,6 +73,16 @@ public class SysUserServiceImpl implements SysUserService {
         return userMapper.findByKeyword(keyword);
     }
 
+    public PageResult<SysUser> getPageByDeptId(int deptId, PageQuery pageQuery) {
+        BeanValidator.check(pageQuery);
+        int count = userMapper.countByDeptId(deptId);
+        if (count > 0) {
+            List<SysUser> list = userMapper.getPageByDeptId(deptId, pageQuery);
+            return PageResult.<SysUser>builder().data(list).total(count).build();
+        }
+        return PageResult.<SysUser>builder().build();
+    }
+
 
     public boolean checkEmailExist(String mail, Integer userId) {
         return userMapper.countByMail(mail, userId) > 0;
@@ -80,8 +94,8 @@ public class SysUserServiceImpl implements SysUserService {
     private SysUser param2SysUser(UserParam param) {
         SysUser user = new SysUser();
         BeanUtils.copyProperties(param, user);
-        user.setOperator("system");
-        user.setOperatorIp("127.0.0.1");
+        user.setOperator(RequestHolder.getCurrentUser().getUsername());
+        user.setOperatorIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
         user.setOperatorTime(new Date());
         return user;
     }

@@ -11,6 +11,7 @@ import javax.validation.constraints.NotNull;
  */
 @Getter
 @Setter
+@Deprecated
 public class TestVo {
 
     @NotBlank

@@ -1,5 +1,7 @@
 package com.miller.controller;
 
+import com.miller.common.PageQuery;
+import com.miller.common.PageResult;
 import com.miller.common.Result;
 import com.miller.param.UserParam;
 import com.miller.service.SysUserService;
@@ -8,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
@@ -35,5 +38,12 @@ public class SysUserController {
     public Result update(UserParam param) {
         userService.update(param);
         return ResultUtil.buildSuccess();
+    }
+
+    @RequestMapping(value = "/page")
+    @ResponseBody
+    public Result<PageResult> page(@RequestParam("deptId") Integer deptId,
+                                   PageQuery pageQuery) {
+        return ResultUtil.buildSuccess(userService.getPageByDeptId(deptId, pageQuery));
     }
 }

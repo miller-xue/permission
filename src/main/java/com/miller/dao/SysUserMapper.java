@@ -1,7 +1,10 @@
 package com.miller.dao;
 
+import com.miller.common.PageQuery;
 import com.miller.model.SysUser;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 public interface SysUserMapper {
     int deleteByPrimaryKey(Integer id);
@@ -34,9 +37,26 @@ public interface SysUserMapper {
 
     /**
      * 确定电话的唯一性
+     *
      * @param telephone
      * @param id
      * @return
      */
     int countByTelephone(@Param("telephone") String telephone, @Param("id") Integer id);
+
+    /**
+     * 根据部门id查询下所属用户列表
+     * @param deptId
+     * @return
+     */
+    int countByDeptId(@Param("deptId") int deptId);
+
+    /**
+     * 根据部门id分页查询用户列表
+     * @param deptId
+     * @param page
+     * @return
+     */
+    List<SysUser> getPageByDeptId(@Param("deptId") int deptId,
+                                  @Param("page") PageQuery page);
 }

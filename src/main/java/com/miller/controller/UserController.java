@@ -49,6 +49,7 @@ public class UserController {
                 response.sendRedirect(ret);
             } else {
                 response.sendRedirect("/admin/index");
+                return;
             }
         }
 

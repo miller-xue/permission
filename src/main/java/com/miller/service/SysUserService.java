@@ -1,5 +1,7 @@
 package com.miller.service;
 
+import com.miller.common.PageQuery;
+import com.miller.common.PageResult;
 import com.miller.model.SysUser;
 import com.miller.param.UserParam;
 
@@ -13,4 +15,6 @@ public interface SysUserService {
     public void update(UserParam param);
 
     public SysUser findByKeyword(String keyword);
+
+    public PageResult<SysUser> getPageByDeptId(int deptId, PageQuery pageQuery);
 }

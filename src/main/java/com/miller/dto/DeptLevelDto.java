@@ -18,6 +18,7 @@ import java.util.List;
 @Setter
 @ToString
 public class DeptLevelDto extends BaseTree<DeptLevelDto> {
+
     private Integer id;
 
     private String name;
