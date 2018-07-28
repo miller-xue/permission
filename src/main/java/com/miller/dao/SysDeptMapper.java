@@ -18,6 +18,10 @@ public interface SysDeptMapper {
 
     int updateByPrimaryKey(SysDept record);
 
+    /**
+     * 查询所有部门
+     * @return
+     */
     List<SysDept> getAllDept();
 
     /**
@@ -35,6 +39,13 @@ public interface SysDeptMapper {
      */
     void batchUpdateLevel(@Param("sysDeptList") List<SysDept> sysDeptList);
 
+    /**
+     * 根据名称和parentid 查询name使用的次数
+     * @param parentId
+     * @param name
+     * @param id
+     * @return
+     */
     int countByNameAndParentId(@Param("parentId") Integer parentId,
                                @Param("name") String name,
                                @Param("id") Integer id);

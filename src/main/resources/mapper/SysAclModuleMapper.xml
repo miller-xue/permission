@@ -149,4 +149,38 @@
       operator_ip = #{operatorIp,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
+  
+  <select id="getAllAclModule" resultType="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from sys_acl_module
+    ORDER BY parent_id,seq
+  </select>
+
+  <select id="countByNameAndParentId" parameterType="map" resultType="int">
+    select count(1)
+    from sys_dept
+    where  name = #{name}
+    <if test="parentId != null">
+      AND parent_id = #{parentId}
+    </if>
+    <if test="id != null">
+      AND id != #{id}
+    </if>
+  </select>
+
+  <select id="getChildAclModuleListByLevel" parameterType="map" resultType="BaseResultMap">
+    select
+    <include refid="Base_Column_list"/>
+    from sys_acl_module
+    where level like CONCAT('${level}','.%')
+  </select>
+
+  <update id="batchUpdateLevel" parameterType="map">
+    <foreach collection="list" item="aclModule">
+      update sys_acl_module
+      set level = #{aclModule.level}
+      where id = #{aclModule.id}
+    </foreach>
+  </update>
 </mapper>

@@ -23,4 +23,9 @@ public class LevelUtil {
         }
         return StringUtils.join(parentLevel, SEPARATOR, parentId);
     }
+
+
+    public static void main(String[] args) {
+        System.out.println(caculateLevel(null, 0));
+    }
 }

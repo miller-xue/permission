@@ -40,7 +40,7 @@ public class SysDeptServiceImpl implements SysDeptService {
         BeanValidator.check(param);
         // 2.检查部门名称是否重复
         if (checkExist(param.getParentId(), param.getName(), param.getId())) {
-            throw new ParamException(ResultEnum.DEPT_NAME_EXITS);
+            throw new ParamException(ResultEnum.DEPT_NAME_EXIST);
         }
         SysDept dept = param2Model(param);
         dept.setLevel(LevelUtil.caculateLevel(getLevel(param.getParentId()), dept.getParentId()));
@@ -49,12 +49,7 @@ public class SysDeptServiceImpl implements SysDeptService {
 
     public List<DeptLevelDto> deptTree() {
         List<SysDept> deptList = mapper.getAllDept();
-
-        List<DeptLevelDto> dtoList = Lists.newArrayList();
-        for (SysDept dept : deptList) {
-            DeptLevelDto dto = DeptLevelDto.adapt(dept);
-            dtoList.add(dto);
-        }
+        List<DeptLevelDto> dtoList = DeptLevelDto.adaptList(deptList);
         return  TreeBuilder.makeTreeList(dtoList, "id", "parentId");
 
     }
@@ -75,23 +70,23 @@ public class SysDeptServiceImpl implements SysDeptService {
         }
         // 父节点 == 当前待更新对象
         if (after.getParentId().equals(after.getId())) {
-            throw new ParamException(ResultEnum.DEPT_PARENT_ID_NOT_EQUALS_ID);
+            throw new ParamException(ResultEnum.PARENT_ID_NOT_EQUALS_ID);
         }
         // 2.检查父部门是否存在
         if (!after.getParentId().equals(SysConstans.ROOT_PARENT_ID)) {
             SysDept newParent = mapper.selectByPrimaryKey(after.getParentId());
             if (newParent == null) {
-                throw new ParamException(ResultEnum.DEPT_PARENT_NOT_EXIT);
+                throw new ParamException(ResultEnum.PARENT_NOT_EXIST);
             }
             if (newParent.getLevel().indexOf(before.getLevel()) == 0 && newParent.getLevel().length() > before.getLevel().length()) {
-                throw new ParamException(ResultEnum.DEPT_PARENT_NOT_CHILD);
+                throw new ParamException(ResultEnum.PARENT_NOT_CHILD);
             }
         }
 
 
         // 2.检查部门名称是否重复
         if (checkExist(param.getParentId(), param.getName(), param.getId())) {
-            throw new ParamException(ResultEnum.DEPT_NAME_EXITS);
+            throw new ParamException(ResultEnum.DEPT_NAME_EXIST);
         }
         after.setLevel(LevelUtil.caculateLevel(getLevel(after.getParentId()), after.getParentId()));
         // 更新之后的值
