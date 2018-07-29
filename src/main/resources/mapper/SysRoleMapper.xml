@@ -125,4 +125,18 @@
       operator_ip = #{operatorIp,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
+
+  <select id="countByName" resultType="int" parameterType="map">
+    SELECT count(1)
+    FROM sys_role
+    WHERE name = #{name}
+    <if test="id != null">
+      and id != #{id}
+    </if>
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap"  >
+    select
+    <include refid="Base_Column_List" />
+    from sys_role
+  </select>
 </mapper>

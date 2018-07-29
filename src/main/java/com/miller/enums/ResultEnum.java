@@ -39,7 +39,9 @@ public enum ResultEnum {
 
 
     ACL_NAME_EXIST(11, "当前权限模块下存在相同名称的权限点"),
-    ACL_NOT_EXIST(12,"权限点不存在")
+    ACL_NOT_EXIST(12,"权限点不存在"),
+    ROLE_NAME_EXIST(13, "角色名重复"),
+    ROLE_NOT_EXIST(14, "待更新的角色不存在"),
     ;
 
     private Integer code;
