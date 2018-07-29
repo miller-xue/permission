@@ -150,7 +150,7 @@
     where id = #{id,jdbcType=INTEGER}
   </update>
   
-  <select id="getAllAclModule" resultType="BaseResultMap">
+  <select id="getAllAclModule" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
     from sys_acl_module
@@ -159,7 +159,7 @@
 
   <select id="countByNameAndParentId" parameterType="map" resultType="int">
     select count(1)
-    from sys_dept
+    from sys_acl_module
     where  name = #{name}
     <if test="parentId != null">
       AND parent_id = #{parentId}
@@ -169,9 +169,9 @@
     </if>
   </select>
 
-  <select id="getChildAclModuleListByLevel" parameterType="map" resultType="BaseResultMap">
+  <select id="getChildAclModuleListByLevel" parameterType="map" resultMap="BaseResultMap">
     select
-    <include refid="Base_Column_list"/>
+    <include refid="Base_Column_List"/>
     from sys_acl_module
     where level like CONCAT('${level}','.%')
   </select>

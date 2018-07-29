@@ -220,43 +220,218 @@
 <script type="text/javascript">
     $(function () {
         var aclModuleList; //存储树形权限模块列表
-        var aclModuleLMap; // 存储map格式权限模块信息
+        var aclModuleMap = {}; // 存储map格式权限模块信息
         var aclMap = {}; //存储map格式权限点信息
         var optionStr = "";
         var lastClickAclModuleId = -1;
 
-        var aclModuleListTemplate = $("#aclModuleListTemplate").html();
+        var aclModuleListTemplate = $('#aclModuleListTemplate').html();
         Mustache.parse(aclModuleListTemplate);
         var aclListTemplate = $("#aclListTemplate").html();
         Mustache.parse(aclListTemplate);
 
         loadAclModuleTree();
+
         function loadAclModuleTree() {
             $.ajax({
                 url: '/sys/aclModule/tree',
                 success: function (result) {
-                    if(result.result) {
+                    if (result.result) {
                         aclModuleList = result.data;
-                        var rendered = Mustache.render(aclModuleListTemplate, {aclModuleList: result.data});
+                        var rendered = Mustache.render(aclModuleListTemplate, {
+                            aclModuleList: result.data,
+                            "showDownAngle": function () {
+                                return function (text, render) {
+                                    return (this.children && this.children.length > 0) ? "" : "hidden";
+                                }
+                            },
+                            "displayClass": function () {
+                                return "";
+                            }
+                        });
                         $("#aclModuleList").html(rendered);
                         recursiveRenderAclModule(result.data);
                         bindAclModuleClick();
-                    }else {
+                    } else {
                         showMessage("加载权限模块列表", result.msg, false);
                     }
                 }
             })
         }
 
+        /**
+         * 递归渲染权限模块
+         */
+        function recursiveRenderAclModule(aclModuleList) {
+            if (aclModuleList && aclModuleList.length > 0) {
+                $(aclModuleList).each(function (i, aclModule) {
+                    aclModuleMap[aclModule.id] = aclModule;
+                    if (aclModule.children && aclModule.children.length > 0) {
+                        var rendered = Mustache.render(aclModuleListTemplate, {
+                            aclModuleList: aclModule.children,
+                            "showDownAngle": function () {
+                                return function (text, render) {
+                                    return (this.children && this.children.length > 0) ? "" : "hidden";
+                                }
+                            },
+                            "displayClass": function () {
+                                return "hidden";
+                            }
+                        });
+                        $("#aclModule_" + aclModule.id).append(rendered);
+                        recursiveRenderAclModule(aclModule.children)
+                    }
+                });
+            }
+        }
 
-       function recursiveRenderAclModule() {
-           
-       }
-       
-       function bindAclModuleClick() {
-           
-       }
-    })
+        function bindAclModuleClick() {
+            $(".sub-aclModule").click(function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                $(this).parent().parent().parent().children().children(".aclModule-name").toggleClass("hidden");
+                if($(this).is('.fa-angle-double-down')){
+                    $(this).removeClass('fa-angle-double-down').addClass('fa-angle-double-up');
+                }else {
+                    $(this).removeClass('fa-angle-double-up').addClass('fa-angle-double-down');
+                }
+            });
+
+            $(".aclModule-edit").click(function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                var aclModuleId = $(this).attr("data-id");
+                $("#dialog-aclModule-form").dialog({
+                    model: true,
+                    title: '修改权限模块',
+                    open: function (event, ui) {
+                        $(".ui-dialog-titlebar-close", $(this).parent()).hide();
+                        optionStr = "<option value= \"0\">-</option>";
+                        recursiveRenderAclModuleSelect(aclModuleList, 1);
+                        $("#aclModuleForm")[0].reset();
+                        $("#parentId").html(optionStr);
+
+                        $("#aclModuleId").val(aclModuleId);
+                        var targetAclModule = aclModuleMap[aclModuleId]
+                        if(targetAclModule) {
+                            $("#parentId").val(targetAclModule.parentId);
+                            $("#aclModuleName").val(targetAclModule.name);
+                            $("#aclModuleStatus").val(targetAclModule.status);
+                            $("#aclModuleSeq").val(targetAclModule.seq);
+                            $("#aclModuleRemark").val(targetAclModule.remark);
+                        }
+                    },
+                    buttons: {
+                        "更新" : function (e) {
+                            e.preventDefault();
+                            updateAclModule(false,function (data) {
+                                $("#dialog-aclModule-form").dialog('close');
+                            },function (data) {
+                                showMessage("更新权限模块", data.msg, false);
+                            })
+                        },
+                        "取消": function () {
+                            $("#dialog-aclModule-form").dialog("close");
+                        }
+                    }
+                });
+            });
+
+            $(".aclModule-name").click(function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                var aclModuleId = $(this).attr('data-id');
+                handleAclModuleSelected(aclModuleId);
+            });
+        }
+
+        $(".aclModule-add").click(function () {
+            $("#dialog-aclModule-form").dialog({
+                model: true,
+                title: "新增模块",
+                open: function (event, ui) {
+                    $(".ui-dialog-titlebar-close", $(this).parent()).hide();
+                    optionStr = "<option value= \"0\">-</option>";
+                    recursiveRenderAclModuleSelect(aclModuleList, 1);
+                    $("#aclModuleForm")[0].reset();
+                    $("#parentId").html(optionStr);
+                },
+                buttons: {
+                    "添加": function (e) {
+                        e.preventDefault();
+                        updateAclModule(true, function (result) {
+                            $("#dialog-aclModule-form").dialog("close");
+                        },function (result) {
+                            showMessage("新增模块", result.msg, false);
+                        })
+                    },
+                    "取消": function () {
+                        $("#dialog-aclModule-form").dialog("close");
+                    }
+                }
+            });
+        });
+
+        function recursiveRenderAclModuleSelect(aclModuleList, level) {
+            level = level | 0;
+            if(aclModuleList && aclModuleList.length > 0) {
+                $(aclModuleList).each(function (i, aclModule) {
+                    var blank = "";
+                    if(level > 1) {
+                        for(var j = 3; j <= level; j ++) {
+                            blank += "..";
+                        }
+                        blank += "L";
+                    }
+                    optionStr += Mustache.render("<option value='{{id}}' >{{name}}</option>",{id: aclModule.id,name: blank + aclModule.name});
+
+                    if(aclModule.children && aclModule.children.length > 0) {
+                        recursiveRenderAclModuleSelect(aclModule.children, level + 1);
+                    }
+                });
+            }
+        }
+
+        function updateAclModule(isCreate, successCallback,failCallback) {
+            $.ajax({
+                url: isCreate ? "/sys/aclModule/save" : "/sys/aclModule/update",
+                data: $("#aclModuleForm").serializeArray(),
+                type: 'POST',
+                success: function (result) {
+                    if(result.result) {
+                        loadAclModuleTree();
+                        if(successCallback) {
+                            successCallback(result);
+                        }
+                    }else {
+                        if(failCallback) {
+                            failCallback(result);
+                        }
+                    }
+                }
+            });
+        }
+
+        function handleAclModuleSelected(aclModuleId) {
+            if(lastClickAclModuleId != -1) {
+                // 移除被选中的样式
+                var lastAclModule = $("#aclModule_" + lastClickAclModuleId + " .dd2-content:first");
+                lastAclModule.removeClass("btn-yellow");
+                lastAclModule.removeClass("no-hover");
+            }
+            var currentAclModule = $("#aclModule_" + aclModuleId + " .dd2-content:first");
+            lastClickAclModuleId = aclModuleId;
+            currentAclModule.addClass("btn-yellow")
+            currentAclModule.addClass("no-hover")
+            loadAclList(aclModuleId)
+        }
+        
+        function loadAclList(aclModuleId) {
+            console.log(aclModuleId);
+        }
+
+    });
 </script>
 
 </body>

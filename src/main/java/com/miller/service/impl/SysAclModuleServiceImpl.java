@@ -45,9 +45,19 @@ public class SysAclModuleServiceImpl implements SysAclModuleService {
             throw new ParamException(ResultEnum.ACL_MODULE_NAME_EXIST);
         }
         SysAclModule sysAclModule = param2Model(param);
-        // 计算level level == 上级level . 上级id
-        sysAclModule.setLevel(LevelUtil.caculateLevel(getLevel(sysAclModule.getParentId()), sysAclModule.getParentId()));
+        SysAclModule parentModule = null;
+        // 判断父节点是否存在
+        if (!param.getParentId().equals(SysConstans.ROOT_PARENT_ID)) {
+            parentModule = sysAclModuleMapper.selectByPrimaryKey(param.getParentId());
+            if (parentModule == null) {
+                throw new ParamException(ResultEnum.PARENT_NOT_EXIST);
+            }
+            sysAclModule.setLevel(LevelUtil.caculateLevel(parentModule.getLevel(), parentModule.getId()));
+        }else {
+            sysAclModule.setLevel(LevelUtil.caculateLevel(getLevel(sysAclModule.getParentId()), sysAclModule.getParentId()));
+        }
 
+        // 计算level level == 上级level . 上级id
         sysAclModuleMapper.insertSelective(sysAclModule);
     }
 
@@ -87,13 +97,15 @@ public class SysAclModuleServiceImpl implements SysAclModuleService {
             if (afterParent.getLevel().indexOf(before.getLevel()) == 0 && afterParent.getLevel().length() > before.getLevel().length()) {
                 throw new ParamException(ResultEnum.PARENT_NOT_CHILD);
             }
+            after.setLevel(LevelUtil.caculateLevel(afterParent.getLevel(), afterParent.getId()));
+        }else {
+            after.setLevel(LevelUtil.caculateLevel(getLevel(after.getParentId()),after.getParentId()));
         }
 
         if (checkExist(param.getParentId(), param.getName(), param.getId())) {
             throw new ParamException(ResultEnum.ACL_MODULE_NAME_EXIST);
         }
 
-        after.setLevel(LevelUtil.caculateLevel(afterParent.getLevel(), afterParent.getId()));
         updateWithChild(before, after);
     }
 
@@ -158,8 +170,11 @@ public class SysAclModuleServiceImpl implements SysAclModuleService {
         SysAclModule sysAclModule = new SysAclModule();
         BeanUtils.copyProperties(param, sysAclModule);
 
-        sysAclModule.setOperator(RequestHolder.getCurrentUser().getUsername());
-        sysAclModule.setOperatorIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
+//        sysAclModule.setOperator(RequestHolder.getCurrentUser().getUsername());
+//        sysAclModule.setOperatorIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
+        //
+        sysAclModule.setOperator("测试");
+        sysAclModule.setOperatorIp("测试");
         sysAclModule.setOperatorTime(new Date());
         return sysAclModule;
     }
