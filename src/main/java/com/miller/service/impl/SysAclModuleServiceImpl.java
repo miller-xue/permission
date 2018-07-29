@@ -170,11 +170,8 @@ public class SysAclModuleServiceImpl implements SysAclModuleService {
         SysAclModule sysAclModule = new SysAclModule();
         BeanUtils.copyProperties(param, sysAclModule);
 
-//        sysAclModule.setOperator(RequestHolder.getCurrentUser().getUsername());
-//        sysAclModule.setOperatorIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
-        //
-        sysAclModule.setOperator("测试");
-        sysAclModule.setOperatorIp("测试");
+        sysAclModule.setOperator(RequestHolder.getCurrentUser().getUsername());
+        sysAclModule.setOperatorIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
         sysAclModule.setOperatorTime(new Date());
         return sysAclModule;
     }

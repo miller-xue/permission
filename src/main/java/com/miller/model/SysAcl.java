@@ -3,6 +3,7 @@ package com.miller.model;
 import java.util.Date;
 
 public class SysAcl {
+
     private Integer id;
 
     private String code;

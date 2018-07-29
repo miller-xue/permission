@@ -35,7 +35,11 @@ public enum ResultEnum {
 
     ACL_MODULE_NAME_EXIST(9, "同一级别下存在相同名称的权限部门"),
 
-    ACL_MODULE_NOT_EXIST(10,"权限模块不存在")
+    ACL_MODULE_NOT_EXIST(10,"权限模块不存在"),
+
+
+    ACL_NAME_EXIST(11, "当前权限模块下存在相同名称的权限点"),
+    ACL_NOT_EXIST(12,"权限点不存在")
     ;
 
     private Integer code;

@@ -36,7 +36,7 @@
     <filter-name>encodingFilter</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
-  <!-- 登陆过滤器
+  <!-- 登陆过滤器 -->
   <filter>
     <filter-name>LoginFilter</filter-name>
     <filter-class>com.miller.filter.LoginFilter</filter-class>
@@ -46,7 +46,7 @@
     <url-pattern>/sys/*</url-pattern>
     <url-pattern>/admin/*</url-pattern>
   </filter-mapping>
- -->
+
 
   <!-- spring mvc  -->
   <servlet>
