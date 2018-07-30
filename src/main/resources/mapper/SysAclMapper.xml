@@ -201,4 +201,30 @@
     ORDER BY seq ASC, name ASC
     limit #{page.offset}, #{page.pageSize}
   </select>
+
+
+  <select id="selectUserAclList" parameterType="map" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from sys_acl
+    where id in (
+      select
+        DISTINCT acl_id
+      from sys_role_acl
+      where role_id in (
+        select role_id from sys_role_user where user_id = #{userId}
+      )
+    )
+  </select>
+  <select id="selectRoleAclList" parameterType="map" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from sys_acl
+    where id in (
+      select
+        acl_id
+      from sys_role_acl
+      where role_id = #{roleId}
+    )
+  </select>
 </mapper>

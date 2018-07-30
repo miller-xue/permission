@@ -25,7 +25,15 @@ public interface SysRoleService {
 
     /**
      * 获取所有角色
+     *
      * @return
      */
     List<SysRole> getAll();
+
+    /**
+     * 根据角色获取权限模块树
+     * @param roleId
+     * @return
+     */
+    List roleTree(int roleId);
 }

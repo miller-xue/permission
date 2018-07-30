@@ -1,7 +1,10 @@
 package com.miller.model;
 
+import lombok.EqualsAndHashCode;
+
 import java.util.Date;
 
+@EqualsAndHashCode(of = {"id"})
 public class SysAcl {
 
     private Integer id;

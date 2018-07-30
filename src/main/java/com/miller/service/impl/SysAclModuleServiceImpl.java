@@ -37,7 +37,7 @@ public class SysAclModuleServiceImpl implements SysAclModuleService {
     @Resource
     private SysAclModuleMapper sysAclModuleMapper;
 
-
+    @Override
     public void save(AclModuleParam param) throws ParamException {
         BeanValidator.check(param);
 
@@ -61,6 +61,7 @@ public class SysAclModuleServiceImpl implements SysAclModuleService {
         sysAclModuleMapper.insertSelective(sysAclModule);
     }
 
+    @Override
     public List<AclModuleLevelDto> aclModuleTree() {
         List<SysAclModule> allAclModule = sysAclModuleMapper.getAllAclModule();
         List<AclModuleLevelDto> dtoList = AclModuleLevelDto.adaptList(allAclModule);
@@ -68,6 +69,7 @@ public class SysAclModuleServiceImpl implements SysAclModuleService {
         return TreeBuilder.makeTreeList(dtoList,"id","parentId");
     }
 
+    @Override
     @Transactional
     public void update(AclModuleParam param) throws ParamException {
         BeanValidator.check(param);

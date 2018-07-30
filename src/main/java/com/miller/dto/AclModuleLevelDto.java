@@ -8,10 +8,12 @@ import lombok.Setter;
 import lombok.ToString;
 import org.springframework.beans.BeanUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by miller on 2018/7/28
+ * @author Miller
  */
 @Getter
 @Setter
@@ -31,6 +33,8 @@ public class AclModuleLevelDto  extends BaseTree<AclModuleLevelDto> {
     private Integer status;
 
     private String remark;
+
+    private List<AclDto> aclList = new ArrayList<AclDto>();
 
     public static AclModuleLevelDto adapt(SysAclModule dept) {
         AclModuleLevelDto dto = new AclModuleLevelDto();
