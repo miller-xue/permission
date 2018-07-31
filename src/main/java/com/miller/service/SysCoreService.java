@@ -31,5 +31,9 @@ public interface SysCoreService {
      */
     List<SysAcl> getUserAclList(int userId);
 
+    /**
+     * 是不是超级管理员
+     * @return
+     */
     boolean isSuperAdmin();
 }

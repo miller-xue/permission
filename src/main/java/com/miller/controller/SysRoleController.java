@@ -74,7 +74,7 @@ public class SysRoleController {
      * @param roleId
      * @return
      */
-    @RequestMapping(value = "/roleTree")
+    @RequestMapping(value = "/roleTree",method = RequestMethod.POST)
     @ResponseBody
     public Result roleTree(@RequestParam("roleId") int roleId) {
         return ResultUtil.buildSuccess(sysRoleService.roleTree(roleId));

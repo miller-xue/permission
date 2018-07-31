@@ -61,7 +61,7 @@ public interface SysAclMapper {
      * @param userId
      * @return
      */
-    List<SysAcl> selectUserAclList(@Param("userId") int userId);
+    List<SysAcl> selectAclListByUserId(@Param("userId") int userId);
 
     /**
      * 根据角色Id
@@ -70,5 +70,5 @@ public interface SysAclMapper {
      * @param roleId
      * @return
      */
-    List<SysAcl> selectRoleAclList(@Param("roleId") int roleId);
+    List<SysAcl> selectAclListByRoleId(@Param("roleId") int roleId);
 }

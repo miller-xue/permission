@@ -62,6 +62,7 @@ public class SysRoleServiceImpl implements SysRoleService {
         sysRoleMapper.insertSelective(role);
     }
 
+
     @Override
     public void update(RoleParam param) {
         // 1.参数校验
@@ -118,7 +119,11 @@ public class SysRoleServiceImpl implements SysRoleService {
         return aclListToTree(aclDtoList);
     }
 
-
+    /**
+     * 拼接AclModule acl 拼接成树
+     * @param aclDtoList
+     * @return
+     */
     public List<AclModuleLevelDto> aclListToTree(List<AclDto> aclDtoList) {
         if (CollectionUtils.isEmpty(aclDtoList)) {
             return Lists.newArrayList();
@@ -137,6 +142,11 @@ public class SysRoleServiceImpl implements SysRoleService {
         return TreeBuilder.makeTreeList(aclModuleList, "id", "parentId");
     }
 
+    /**
+     * 权限模块绑定权限
+     * @param aclModuleList
+     * @param moduleIdAclMap
+     */
     public void bindAclListWithOrder(List<AclModuleLevelDto> aclModuleList, Multimap<Integer, AclDto> moduleIdAclMap) {
         if(CollectionUtils.isEmpty(aclModuleList)){
             return;

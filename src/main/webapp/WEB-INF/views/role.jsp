@@ -144,6 +144,36 @@
 
         var roleListTemplate = $("#roleListTemplate").html();
         Mustache.parse(roleListTemplate);
+        // zTree
+        /* 树结构相关 */
+        var zTreeObj = [];
+        var modulePrefix = 'm_';
+        var aclPrefix = 'a_';
+        var nodeMap = {};
+
+        var setting = {
+            check: {
+                enable: true,
+                chkDisabledInherit: true,
+                chkboxType: {"Y": "ps", "N": "ps"}, //auto check 父节点 子节点
+                autoCheckTrigger: true
+            },
+            data: {
+                simpleData: {
+                    enable: true,
+                    rootPId: 0
+                }
+            },
+            callback: {
+                onClick: onClickTreeNode
+            }
+        };
+
+        function onClickTreeNode(e, treeId, treeNode) { // 绑定单击事件
+            var zTree = $.fn.zTree.getZTreeObj("roleAclTree");
+            zTree.expandNode(treeNode);
+        }
+
 
         loadRoleList();
         function loadRoleList() {
@@ -221,16 +251,101 @@
 
             $('#roleTab a:first').trigger('click');
             if(selectFirstTab) {
-                loadRoleAcl();
+                loadRoleAcl(roleId);
             }
         }
+
 
         /**
          * 加载角色权限
          */
-        function loadRoleAcl() {
+        function loadRoleAcl(selectRoleId) {
+            if(selectRoleId == -1) {
+                return;
+            }
+            $.ajax({
+                url: '/sys/role/roleTree',
+                data: {roleId: selectRoleId},
+                type: 'POST',
+                success: function (result) {
+                    if(result.result) {
+                        renderRoleTree(result.data);
+                    }else {
+                        showMessage("加载角色权限数据", result.msg, false);
+                    }
+                }
+            });
+        }
+
+        function getTreeSelectId() {
+            var treeObj = $.fn.zTree.getZTreeObj("roleAclTree");
+            var nodes = treeObj.getCheckedNodes(true);
+            var v = ""
+            for(var i = 0 ; i < nodes.length ; i++) {
+                if(nodes[i].id.startsWith(aclPrefix)){
+                    v += "," + nodes[i].dataId
+                }
+            }
+            return v.length > 0 ? v.substring(1) : v;
 
         }
+        
+        function renderRoleTree(aclModuleList) {
+            zTreeObj = [];
+            recursivePrepareTreeData(aclModuleList);
+            for(var key in nodeMap){
+                zTreeObj.push(nodeMap[key]);
+            }
+            $.fn.zTree.init($("#roleAclTree"), setting, zTreeObj);
+
+        }
+        
+        function recursivePrepareTreeData(aclModuleList) {
+            // prepare nodeMap 准备
+            if(aclModuleList && aclModuleList.length > 0) {
+                $(aclModuleList).each(function (i, aclModule) {
+                    var hasChecked = false;
+                    if(aclModule.aclList && aclModule.aclList.length > 0) {
+                        $(aclModule.aclList).each(function (j, acl) {
+                            zTreeObj.push({
+                                id: aclPrefix + acl.id,
+                                pId: modulePrefix + acl.aclModuleId,
+                                name: acl.name + ((acl.type == 1) ? '(菜单)' : ''),
+                                chkDisabled: !acl.hasAcl,
+                                checked: acl.checked,
+                                dataId: acl.id
+                            });
+                            if(acl.checked) {
+                                hasChecked = true;
+                            }
+                        });
+                    }
+                    if((aclModule.children && aclModule.children.length > 0) ||
+                        (aclModule.aclList && aclModule.aclList.length > 0 )){
+                        nodeMap[modulePrefix + aclModule.id] = {
+                            id: modulePrefix + aclModule.id,
+                            pId: modulePrefix + aclModule.parentId,
+                            name: aclModule.name,
+                            open: hasChecked
+                        };
+                        var tempAclModule = nodeMap[modulePrefix + aclModule.id];
+                        while(hasChecked && tempAclModule) {
+                            if(tempAclModule) {
+                                nodeMap[tempAclModule.id] = {
+                                    id: tempAclModule.id,
+                                    pId: tempAclModule.pId,
+                                    name: tempAclModule.name,
+                                    open: true
+                                };
+                            }
+                            tempAclModule = nodeMap[tempAclModule.pId];
+                        }
+                    }
+                    recursivePrepareTreeData(aclModule.children);
+                });
+            }
+        }
+        
 
         $(".role-add").click(function () {
             $("#dialog-role-form").dialog({

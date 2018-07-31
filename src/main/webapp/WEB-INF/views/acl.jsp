@@ -146,7 +146,7 @@
             </tr>
             <tr>
                 <td><label for="aclUrl">URL</label></td>
-                <td><input type="text" name="url" id="aclUrl" value="1" class="text ui-widget-content ui-corner-all"></td>
+                <td><input type="text" name="url" id="aclUrl" value="" class="text ui-widget-content ui-corner-all"></td>
             </tr>
             <tr>
                 <td><label for="aclStatus">状态</label></td>
@@ -159,7 +159,7 @@
             </tr>
             <tr>
                 <td><label for="aclSeq">顺序</label></td>
-                <td><input type="text" name="seq" id="aclSeq" value="" class="text ui-widget-content ui-corner-all"></td>
+                <td><input type="text" name="seq" id="aclSeq" value="1" class="text ui-widget-content ui-corner-all"></td>
             </tr>
             <tr>
                 <td><label for="aclRemark">备注</label></td>
@@ -363,7 +363,7 @@
                         updateAclModule(true, function (result) {
                             $("#dialog-aclModule-form").dialog("close");
                         },function (result) {
-                            showMessage("新增模块", result.msg, false);
+                            showMessage("新增模块", result.data, false);
                         })
                     },
                     "取消": function () {
@@ -544,6 +544,7 @@
                     $("#aclForm")[0].reset();
                     $("#aclModuleSelectId").html(optionStr);
                     $("#aclModuleSelectId").val(lastClickAclModuleId);
+                    $("#aclId").val('');
 
                 },
                 buttons: {

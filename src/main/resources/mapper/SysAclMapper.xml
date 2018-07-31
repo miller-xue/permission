@@ -202,8 +202,24 @@
     limit #{page.offset}, #{page.pageSize}
   </select>
 
+  <select id="selectAll" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from sys_acl
+  </select>
 
-  <select id="selectUserAclList" parameterType="map" resultMap="BaseResultMap">
+  <select id="selectByIdList" resultMap="BaseResultMap" parameterType="map">
+    SELECT
+    <include refid="Base_Column_List" />
+    FROM sys_acl
+    WHERE id in
+    <foreach collection="idList" item="id" open="(" close=")" separator=",">
+      #{id}
+    </foreach>
+  </select>
+
+
+  <select id="selectAclListByUserId" parameterType="map" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
     from sys_acl
@@ -216,7 +232,7 @@
       )
     )
   </select>
-  <select id="selectRoleAclList" parameterType="map" resultMap="BaseResultMap">
+  <select id="selectAclListByRoleId" parameterType="map" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
     from sys_acl
