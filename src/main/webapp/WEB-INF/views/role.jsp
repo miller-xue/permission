@@ -389,6 +389,29 @@
                 }
             });
         }
+        $(".saveRoleAcl").click(function (e) {
+            e.preventDefault();
+            if(lastRoleId == -1) {
+                showMessage("保存角色与权限点的关系","请现在左侧选中操作的角色",false);
+                return;
+            }
+            $.ajax({
+                url: "/sys/role/changeAcls",
+                data: {
+                    roleId : lastRoleId,
+                    aclIds: getTreeSelectId()
+                },
+                type: 'POST',
+                success: function (result) {
+                    if(result.result){
+                        showMessage("保存角色与权限点的关系", "操作成功", false);
+                    }else{
+                        showMessage("保存角色与权限点的关系", result.msg, false);
+                    }
+
+                }
+            });
+        })
     });
 </script>
 </body>

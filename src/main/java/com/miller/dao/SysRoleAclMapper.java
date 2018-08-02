@@ -20,8 +20,22 @@ public interface SysRoleAclMapper {
 
     /**
      * 根据角色列表集合查询权限列表
+     *
      * @param roleIdList
      * @return
      */
     List<Integer> selectAclIdListByRoleIdList(@Param("roleIdList") List<Integer> roleIdList);
+
+    /**
+     * TODO
+     * 根据id删除所有角色对应权限
+     * @param roleId
+     */
+    void deleteByRoleId(@Param("roleId") int roleId);
+
+    /**
+     * 批量新增
+     * @param roleAclList
+     */
+    void batchInsert(@Param("roleAclList") List<SysRoleAcl> roleAclList);
 }
