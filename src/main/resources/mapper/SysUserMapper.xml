@@ -199,4 +199,26 @@
     order by username asc
     limit #{page.offset}, #{page.pageSize}
   </select>
+
+
+  <select id="selectByIdList" parameterType="map" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List"/>
+    FROM sys_user
+    WHERE user_id in  <foreach collection="idList" item="id" open="(" close=">" separator=",">
+          ${id}
+        </foreach>
+  </select>
+
+  <select id="selectByRoleId" parameterType="int" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List"/>
+    FROM sys_user
+    WHERE user_id in(
+      select user_id from sys_role_user where role_id = #{roleId}
+    )
+  </select>
+
+  <select id="selectAll" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List"/>
+    FROM sys_user
+  </select>
 </mapper>

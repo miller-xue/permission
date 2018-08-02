@@ -5,16 +5,27 @@ import com.miller.common.PageResult;
 import com.miller.model.SysUser;
 import com.miller.param.UserParam;
 
+import java.util.List;
+
 /**
  * Created by miller on 2018/7/25
+ *
+ * @author Miller
  */
 public interface SysUserService {
 
-    public void save(UserParam param);
+    void save(UserParam param);
 
-    public void update(UserParam param);
+    void update(UserParam param);
 
-    public SysUser findByKeyword(String keyword);
+    SysUser findByKeyword(String keyword);
 
-    public PageResult<SysUser> getPageByDeptId(int deptId, PageQuery pageQuery);
+    PageResult<SysUser> getPageByDeptId(int deptId, PageQuery pageQuery);
+
+    /**
+     * 获得所有用户
+     *
+     * @return
+     */
+    List<SysUser> getAll();
 }
