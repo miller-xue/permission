@@ -139,4 +139,18 @@
     <include refid="Base_Column_List" />
     from sys_role
   </select>
+
+  <select id="selectListByUserId" parameterType="int" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from sys_role
+    where id in (select role_id from sys_role_user where user_id = #{userId} )
+  </select>
+
+  <select id="selectListByAclId" parameterType="int" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from sys_role
+    where id in (select role_id from sys_role_acl where acl_id = #{aclId} )
+  </select>
 </mapper>

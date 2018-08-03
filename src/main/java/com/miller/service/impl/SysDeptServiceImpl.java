@@ -7,6 +7,7 @@ import com.miller.Exception.ParamException;
 import com.miller.common.RequestHolder;
 import com.miller.constant.SysConstans;
 import com.miller.dao.SysDeptMapper;
+import com.miller.dao.SysUserMapper;
 import com.miller.dto.DeptLevelDto;
 import com.miller.enums.ResultEnum;
 import com.miller.model.SysDept;
@@ -34,6 +35,9 @@ public class SysDeptServiceImpl implements SysDeptService {
 
     @Resource
     private SysDeptMapper mapper;
+
+    @Resource
+    private SysUserMapper sysUserMapper;
 
     public void save(DeptParam param) throws ParamException {
         // 1.参数校验
@@ -114,6 +118,24 @@ public class SysDeptServiceImpl implements SysDeptService {
         mapper.updateByPrimaryKey(after);
     }
 
+
+    @Override
+    public void delete(int deptId) {
+        SysDept dept = mapper.selectByPrimaryKey(deptId);
+        // 不存在无法删除
+        if (dept == null) {
+            throw new ParamException(ResultEnum.DEPT_NOT_EXIST);
+        }
+        // 有子部门无法删除
+        if (mapper.countByParentId(deptId) > 0) {
+            throw new ParamException(ResultEnum.DEPT_HAS_CHILD);
+        }
+        // 有用户无法删除
+        if (sysUserMapper.countByDeptId(deptId) > 0) {
+            throw new ParamException(ResultEnum.DEPT_HAS_USER);
+        }
+        mapper.deleteByPrimaryKey(deptId);
+    }
 
     /**
      * 判断是否存在

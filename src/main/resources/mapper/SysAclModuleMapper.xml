@@ -183,4 +183,9 @@
       where id = #{aclModule.id}
     </foreach>
   </update>
+
+  <select id="countByParentId" parameterType="int" resultType="int">
+    select count(1) from sys_acl_module
+    where parent_id = #{aclModuleId}
+  </select>
 </mapper>

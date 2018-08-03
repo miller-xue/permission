@@ -49,4 +49,11 @@ public interface SysDeptMapper {
     int countByNameAndParentId(@Param("parentId") Integer parentId,
                                @Param("name") String name,
                                @Param("id") Integer id);
+
+    /**
+     * 查询子部门数量
+     * @param deptId 部门id
+     * @return 数量
+     */
+    int countByParentId(@Param("deptId") int deptId);
 }

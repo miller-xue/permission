@@ -3,6 +3,7 @@ package com.miller.service.impl;
 import com.miller.Exception.ParamException;
 import com.miller.common.RequestHolder;
 import com.miller.constant.SysConstans;
+import com.miller.dao.SysAclMapper;
 import com.miller.dao.SysAclModuleMapper;
 import com.miller.dto.AclModuleLevelDto;
 import com.miller.dto.DeptLevelDto;
@@ -36,6 +37,9 @@ public class SysAclModuleServiceImpl implements SysAclModuleService {
 
     @Resource
     private SysAclModuleMapper sysAclModuleMapper;
+
+    @Resource
+    private SysAclMapper sysAclMapper;
 
     @Override
     public void save(AclModuleParam param) throws ParamException {
@@ -111,6 +115,8 @@ public class SysAclModuleServiceImpl implements SysAclModuleService {
         updateWithChild(before, after);
     }
 
+
+
     /**
      * 修改自己和子节点的level
      * @param before
@@ -119,7 +125,7 @@ public class SysAclModuleServiceImpl implements SysAclModuleService {
     private void updateWithChild(SysAclModule before, SysAclModule after) {
         String oldLevelPrefix = before.getLevel();
         String newLevelPrefix = after.getLevel();
-        List<SysAclModule> childList = sysAclModuleMapper.getChildAclModuleListByLevel(oldLevelPrefix);
+        List<SysAclModule> childList = sysAclModuleMapper.getChildAclModuleListByLevel(oldLevelPrefix + before.getId());
         if (CollectionUtils.isNotEmpty(childList)) {
             for (SysAclModule aclModule : childList) {
                 String level = aclModule.getLevel();
@@ -128,13 +134,25 @@ public class SysAclModuleServiceImpl implements SysAclModuleService {
                     aclModule.setLevel(level);
                 }
             }
-
+            sysAclModuleMapper.batchUpdateLevel(childList);
         }
-
         sysAclModuleMapper.updateByPrimaryKeySelective(after);
     }
 
-
+    @Override
+    public void delete(int aclModuleId) {
+        SysAclModule sysAclModule = sysAclModuleMapper.selectByPrimaryKey(aclModuleId);
+        if (sysAclModule == null) {
+            throw new ParamException(ResultEnum.ACL_MODULE_NOT_EXIST);
+        }
+        if (sysAclModuleMapper.countByParentId(aclModuleId) > 0) {
+            throw new ParamException(ResultEnum.ACL_MODULE_HAS_CHILD);
+        }
+        if (sysAclMapper.countByAclModuleId(aclModuleId) > 0) {
+            throw new ParamException(ResultEnum.ACL_MODULE_HAS_ACL);
+        }
+        sysAclModuleMapper.deleteByPrimaryKey(aclModuleId);
+    }
     /**
      * 获得指定对象的level
      * @param aclModuleId

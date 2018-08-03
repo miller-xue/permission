@@ -32,4 +32,18 @@ public interface SysRoleMapper {
      * @return
      */
     List<SysRole> selectAll();
+
+    /**
+     * 根据用户Id 查询角色列表
+     * @param userId
+     * @return
+     */
+    List<SysRole> selectListByUserId(@Param("userId") int userId);
+
+    /**
+     * 根据权限id 查询拥有该权限的角色
+     * @param aclId 权限id
+     * @return 角色列表
+     */
+    List<SysRole> selectListByAclId(@Param("aclId") int aclId);
 }

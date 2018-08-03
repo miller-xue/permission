@@ -205,7 +205,7 @@
     select <include refid="Base_Column_List"/>
     FROM sys_user
     WHERE id  in  <foreach collection="idList" item="id" open="(" close=")" separator=",">
-          #{id}id
+          #{id}
         </foreach>
   </select>
 
@@ -220,5 +220,15 @@
   <select id="selectAll" resultMap="BaseResultMap">
     select <include refid="Base_Column_List"/>
     FROM sys_user
+  </select>
+
+  <select id="selectListByAclId" parameterType="int" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List"/>
+    FROM sys_user
+    where id in (
+      select user_id from sys_role_user where role_id in (
+        select role_id from sys_role_acl where acl_id = #{aclId}
+      )
+    )
   </select>
 </mapper>

@@ -40,7 +40,7 @@ public interface SysAclMapper {
                                       @Param("page") PageQuery page);
 
     /**
-     * 查询所有权限 TODO
+     * 查询所有权限
      * @return
      */
     List<SysAcl> selectAll();

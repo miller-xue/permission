@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
@@ -45,16 +46,34 @@ public class SysDeptController {
         return ResultUtil.buildSuccess();
     }
 
+    /**
+     * 获取部门树
+     *
+     * @return 部门树
+     */
     @RequestMapping(value = "/tree", method = RequestMethod.GET)
     @ResponseBody
     public Result tree() {
         return ResultUtil.buildSuccess(deptService.deptTree());
     }
 
+    /**
+     * 修改一个部门
+     *
+     * @param deptParam 部门参数
+     * @return 请求成功
+     */
     @RequestMapping(value = "/update", method = RequestMethod.POST)
     @ResponseBody
     public Result updateDept(DeptParam deptParam) {
         deptService.update(deptParam);
+        return ResultUtil.buildSuccess();
+    }
+
+    @RequestMapping("/delete")
+    @ResponseBody
+    public Result delete(@RequestParam("id") int id) {
+        deptService.delete(id);
         return ResultUtil.buildSuccess();
     }
 }

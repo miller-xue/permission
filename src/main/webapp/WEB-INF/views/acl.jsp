@@ -286,6 +286,7 @@
         }
 
         function bindAclModuleClick() {
+            // 点击展示下面的数据
             $(".sub-aclModule").click(function (e) {
                 e.preventDefault();
                 e.stopPropagation();
@@ -297,6 +298,29 @@
                     $(this).removeClass('fa-angle-double-up').addClass('fa-angle-double-down');
                 }
             });
+
+            $(".aclModule-delete").click(function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                var aclModuleId = $(this).attr("data-id");
+                var aclModuleName = $(this).attr("data-name");
+                if(confirm("确定删除权限模块[" + aclModuleName + "]吗？")){
+                    $.ajax({
+                        url: '/sys/aclModule/delete',
+                        data: {id: aclModuleId},
+                        success: function (result) {
+                            if(result.result){
+                                showMessage("删除权限模块[" + aclModuleName + "]", "操作成功", true);
+                                loadAclModuleTree();
+                            }else{
+                                showMessage("删除权限模块[" + aclModuleName + "]", result.msg, true);
+                            }
+                        }
+                    });
+                }
+
+            });
+
 
             $(".aclModule-edit").click(function (e) {
                 e.preventDefault();
@@ -489,6 +513,24 @@
         }
         
         function bindAclClick() {
+            $(".acl-role").click(function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                var aclId = $(this).attr("data-id");
+                $.ajax({
+                    url: '/sys/acl/acls',
+                    data: { aclId: aclId },
+                    success: function (result) {
+                        if(result.result) {
+                            console.log(result.data);
+                        }else{
+                            showMessage("获取权限点分配角色和用户", result.msg, false);
+                        }
+
+                    }
+                });
+            });
+
             $(".acl-edit").click(function (e) {
                 e.preventDefault();
                 e.stopPropagation();

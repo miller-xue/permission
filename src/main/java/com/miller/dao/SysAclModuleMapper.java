@@ -49,4 +49,12 @@ public interface SysAclModuleMapper {
      * @param list
      */
     void batchUpdateLevel(@Param("list") List<SysAclModule> list);
+
+
+    /**
+     * 查询当前父节点下字节点的数量
+     * @param aclModuleId 权限模块id
+     * @return 子数量
+     */
+    int countByParentId(@Param("aclModuleId") int aclModuleId);
 }

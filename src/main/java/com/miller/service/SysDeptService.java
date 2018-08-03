@@ -25,6 +25,7 @@ public interface SysDeptService {
      *
      * @return
      */
+
     List<DeptLevelDto> deptTree();
 
     /**
@@ -33,4 +34,10 @@ public interface SysDeptService {
      * @throws ParamException
      */
     void update(DeptParam param) throws ParamException;
+
+    /**
+     * 删除一个部门
+     * @param deptId
+     */
+    void delete(int deptId);
 }

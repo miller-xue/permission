@@ -1,5 +1,7 @@
 package com.miller.service;
 
+import com.miller.dto.AclDto;
+import com.miller.dto.AclModuleLevelDto;
 import com.miller.model.SysRole;
 import com.miller.param.RoleParam;
 
@@ -36,4 +38,19 @@ public interface SysRoleService {
      * @return
      */
     List roleTree(int roleId);
+
+
+    /**
+     * 根据用户id获取角色列表
+     * @param userId 用户id
+     * @return 角色列表
+     */
+    List<SysRole> getRoleListByUserId(int userId);
+
+    /**
+     * 查询有指定权限的角色列表
+     * @param aclId 权限id
+     * @return 拥有的用户列表
+     */
+    List<SysRole> getRoleListByAclId(int aclId);
 }

@@ -5,7 +5,7 @@ import lombok.Getter;
 
 /**
  * Created by miller on 2018/7/22
- * @author Miller
+ * @author Miller TODO 枚举分类抽象
  * 系统错误信息枚举
  */
 @AllArgsConstructor
@@ -17,9 +17,15 @@ public enum ResultEnum {
 
     SUCCESS(0, "成功"),
 
+
+
     PARAM_ERROR(1, "参数不正确"),
 
     DEPT_NAME_EXIST(2, "同一级别下存在相同名称的部门"),
+    DEPT_NOT_EXIST(15, "部门不存在"),
+    DEPT_HAS_CHILD(16, "当前部门下有子部门,无法删除"),
+    DEPT_HAS_USER(17, "当前部门下有用户,无法删除"),
+
 
     PARENT_NOT_EXIST(5, "待更新的父部门不存在"),
 
@@ -36,7 +42,8 @@ public enum ResultEnum {
     ACL_MODULE_NAME_EXIST(9, "同一级别下存在相同名称的权限部门"),
 
     ACL_MODULE_NOT_EXIST(10,"权限模块不存在"),
-
+    ACL_MODULE_HAS_CHILD(18, "当前模块下有子模块无法删除"),
+    ACL_MODULE_HAS_ACL(19, "当前模块下有权限点无法删除"),
 
     ACL_NAME_EXIST(11, "当前权限模块下存在相同名称的权限点"),
     ACL_NOT_EXIST(12,"权限点不存在"),

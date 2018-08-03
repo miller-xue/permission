@@ -162,7 +162,6 @@ public class SysRoleController {
                              @RequestParam(value = "userIds", required = false, defaultValue = "") String userIds) {
         List<Integer> userIdList = StringUtil.splitToListInt(userIds);
         sysRoleUserService.changeRoleUsers(roleId, userIdList);
-        //TODO
         return ResultUtil.buildSuccess();
     }
 }

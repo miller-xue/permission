@@ -9,6 +9,7 @@ import java.util.List;
 
 /**
  * Created by miller on 2018/7/28
+ * @author Miller
  */
 public interface SysAclModuleService {
 
@@ -33,5 +34,10 @@ public interface SysAclModuleService {
      */
     void update(AclModuleParam param) throws ParamException;
 
+    /**
+     * 根据id删除对象
+     * @param aclModuleId aclModuleId
+     */
+    void delete(int aclModuleId);
 
 }

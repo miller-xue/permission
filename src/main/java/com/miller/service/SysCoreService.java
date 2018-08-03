@@ -1,5 +1,7 @@
 package com.miller.service;
 
+import com.miller.dto.AclDto;
+import com.miller.dto.AclModuleLevelDto;
 import com.miller.model.SysAcl;
 
 import java.util.List;
@@ -36,4 +38,12 @@ public interface SysCoreService {
      * @return
      */
     boolean isSuperAdmin();
+
+
+    /**
+     * 拼接AclModule acl 拼接成树
+     * @param aclDtoList
+     * @return
+     */
+    List<AclModuleLevelDto> aclListToTree(List<AclDto> aclDtoList);
 }

@@ -80,4 +80,11 @@ public interface SysUserMapper {
      * @return
      */
     List<SysUser> selectAll();
+
+    /**
+     *
+     * @param aclId 权限id
+     * @return 拥有该权限的用户列表
+     */
+    List<SysUser> selectListByAclId(@Param("aclId") int aclId);
 }

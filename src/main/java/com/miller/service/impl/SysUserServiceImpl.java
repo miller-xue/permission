@@ -1,13 +1,19 @@
 package com.miller.service.impl;
 
+import com.google.common.collect.Lists;
 import com.miller.Exception.ParamException;
 import com.miller.common.PageQuery;
 import com.miller.common.PageResult;
 import com.miller.common.RequestHolder;
 import com.miller.dao.SysUserMapper;
+import com.miller.dto.AclDto;
+import com.miller.dto.AclModuleLevelDto;
 import com.miller.enums.ResultEnum;
+import com.miller.model.SysAcl;
 import com.miller.model.SysUser;
 import com.miller.param.UserParam;
+import com.miller.service.SysCoreService;
+import com.miller.service.SysRoleService;
 import com.miller.service.SysUserService;
 import com.miller.util.BeanValidator;
 import com.miller.util.IpUtil;
@@ -32,6 +38,11 @@ public class SysUserServiceImpl implements SysUserService {
     @Resource
     private SysUserMapper userMapper;
 
+    @Resource
+    private SysCoreService sysCoreService;
+
+
+    @Override
     public void save(UserParam param) {
         // 1.参数校验
         BeanValidator.check(param);
@@ -48,6 +59,7 @@ public class SysUserServiceImpl implements SysUserService {
         userMapper.insertSelective(sysUser);
     }
 
+    @Override
     public void update(UserParam param) {
         // 1.参数校验
         BeanValidator.check(param);
@@ -69,10 +81,12 @@ public class SysUserServiceImpl implements SysUserService {
 
     }
 
+    @Override
     public SysUser findByKeyword(String keyword) {
         return userMapper.findByKeyword(keyword);
     }
 
+    @Override
     public PageResult<SysUser> getPageByDeptId(int deptId, PageQuery pageQuery) {
         BeanValidator.check(pageQuery);
         int count = userMapper.countByDeptId(deptId);
@@ -83,14 +97,36 @@ public class SysUserServiceImpl implements SysUserService {
         return PageResult.<SysUser>builder().build();
     }
 
+    @Override
     public List<SysUser> getAll() {
         return userMapper.selectAll();
+    }
+
+
+    @Override
+    public List<AclModuleLevelDto> userAclTree(int userId) {
+        List<SysAcl> userAclList = sysCoreService.getUserAclList(userId);
+
+        List<AclDto> userAclDtoList = Lists.newArrayList();
+        for (SysAcl sysAcl : userAclList) {
+            AclDto temp = AclDto.adapt(sysAcl);
+            temp.setChecked(true);
+            temp.setHasAcl(true);
+            userAclDtoList.add(temp);
+        }
+        return sysCoreService.aclListToTree(userAclDtoList);
+    }
+
+    @Override
+    public List<SysUser> getListByAclId(int aclId) {
+        return userMapper.selectListByAclId(aclId);
     }
 
 
     public boolean checkEmailExist(String mail, Integer userId) {
         return userMapper.countByMail(mail, userId) > 0;
     }
+
     public boolean checkTelephoneExist(String telephone, Integer userId) {
         return userMapper.countByTelephone(telephone,userId) > 0;
     }

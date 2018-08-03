@@ -6,6 +6,8 @@ import com.miller.dao.SysAclMapper;
 import com.miller.dao.SysRoleAclMapper;
 import com.miller.dao.SysRoleMapper;
 import com.miller.dao.SysRoleUserMapper;
+import com.miller.dto.AclDto;
+import com.miller.dto.AclModuleLevelDto;
 import com.miller.model.SysAcl;
 import com.miller.service.SysCoreService;
 import org.apache.commons.collections.CollectionUtils;
@@ -69,6 +71,11 @@ public class SysCoreServiceImplDemo implements SysCoreService {
     @Override
     public boolean isSuperAdmin() {
         return true;
+    }
+
+    @Override
+    public List<AclModuleLevelDto> aclListToTree(List<AclDto> aclDtoList) {
+        return null;
     }
 
 

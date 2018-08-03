@@ -27,7 +27,7 @@ public interface SysRoleAclMapper {
     List<Integer> selectAclIdListByRoleIdList(@Param("roleIdList") List<Integer> roleIdList);
 
     /**
-     * TODO
+     *
      * 根据id删除所有角色对应权限
      * @param roleId
      */

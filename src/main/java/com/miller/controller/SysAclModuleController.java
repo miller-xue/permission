@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
@@ -23,11 +24,16 @@ public class SysAclModuleController {
     @Autowired
     private SysAclModuleService sysAclModuleService;
 
+
     @RequestMapping("/page")
     public String page() {
         return "acl";
     }
 
+    /**
+     * 权限模块树
+     * @return 权限模块树
+     */
     @RequestMapping(value = "/tree", method = RequestMethod.GET)
     @ResponseBody
     public Result tree() {
@@ -35,7 +41,7 @@ public class SysAclModuleController {
     }
 
 
-        @RequestMapping(value = "/save", method = RequestMethod.POST)
+    @RequestMapping(value = "/save", method = RequestMethod.POST)
     @ResponseBody
     public Result save(AclModuleParam param) {
         sysAclModuleService.save(param);
@@ -48,4 +54,13 @@ public class SysAclModuleController {
         sysAclModuleService.update(param);
         return ResultUtil.buildSuccess();
     }
+
+    @RequestMapping(value = "/delete")
+    @ResponseBody
+    public Result delete(@RequestParam("id") int id) {
+        sysAclModuleService.delete(id);
+        return ResultUtil.buildSuccess();
+    }
+
+
 }
