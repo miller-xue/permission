@@ -47,10 +47,11 @@ public class SysRoleController {
     @Autowired
     private SysUserService sysUserService;
 
+
     /**
      * 角色页面
      *
-     * @return
+     * @return 页面
      */
     @RequestMapping(value = "/page", method = RequestMethod.GET)
     public String role() {
@@ -60,8 +61,8 @@ public class SysRoleController {
     /**
      * 保存一个角色
      *
-     * @param param
-     * @return
+     * @param param 角色参数对象
+     * @return 是否请求成功
      */
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @ResponseBody
@@ -73,8 +74,8 @@ public class SysRoleController {
     /**
      * 更新一个角色
      *
-     * @param param
-     * @return
+     * @param param 角色参数对象
+     * @return 是否请求成功
      */
     @RequestMapping(value = "/update", method = RequestMethod.POST)
     @ResponseBody
@@ -86,7 +87,7 @@ public class SysRoleController {
     /**
      * 角色列表 JSON 返回
      *
-     * @return
+     * @return 全部角色列表
      */
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @ResponseBody
@@ -97,8 +98,8 @@ public class SysRoleController {
     /**
      * 角色权限树
      *
-     * @param roleId
-     * @return
+     * @param roleId 角色id
+     * @return 角色id的权限模块。权限列表数
      */
     @RequestMapping(value = "/roleTree", method = RequestMethod.POST)
     @ResponseBody
@@ -107,11 +108,11 @@ public class SysRoleController {
     }
 
     /**
-     * 修改权限
+     * 修改角色权限点
      *
-     * @param roleId
-     * @param aclIds
-     * @return
+     * @param roleId 角色id
+     * @param aclIds 权限点列表
+     * @return 是否成功
      */
     @RequestMapping(value = "/changeAcls", method = RequestMethod.POST)
     @ResponseBody
@@ -123,6 +124,11 @@ public class SysRoleController {
     }
 
 
+    /**
+     * 根据角色id查询出选中的和未选中的角色列表
+     * @param roleId
+     * @return  选中的和未选中的角色列表
+     */
     @RequestMapping("/users")
     @ResponseBody
     public Result users(@RequestParam("roleId") int roleId) {
@@ -142,5 +148,21 @@ public class SysRoleController {
         result.put("unselected", unselectedUserList);
 
         return ResultUtil.buildSuccess(result);
+    }
+
+    /**
+     * 修改角色用户列表
+     * @param roleId 角色id
+     * @param userIds 给当前角色分配的用户列表
+     * @return 是否修改成功
+     */
+    @RequestMapping(value = "/changeUsers", method = RequestMethod.POST)
+    @ResponseBody
+    public Result changeUsers(@RequestParam("roleId") int roleId,
+                             @RequestParam(value = "userIds", required = false, defaultValue = "") String userIds) {
+        List<Integer> userIdList = StringUtil.splitToListInt(userIds);
+        sysRoleUserService.changeRoleUsers(roleId, userIdList);
+        //TODO
+        return ResultUtil.buildSuccess();
     }
 }

@@ -35,4 +35,19 @@ public interface SysRoleUserMapper {
      */
     List<Integer> selectUserIdListByRoleId(@Param("roleId") int roleId);
 
+    /**
+     * 根据id删除所有信息
+     * @param roleId 角色id
+     * @return 删除个数
+     */
+    int deleteByRoleId(@Param("roleId") int roleId);
+
+
+    /**
+     * 批量新增角色用户列表
+     * @param roleUserList
+     * @return
+     */
+    int batchInsert(@Param("roleUserList") List<SysRoleUser> roleUserList);
+
 }

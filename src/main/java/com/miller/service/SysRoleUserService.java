@@ -18,4 +18,12 @@ public interface SysRoleUserService {
      */
     List<SysUser> getListByRoleId(int roleId);
 
+
+    /**
+     * 修改角色关联的用户列表
+     * @param roleId 角色id
+     * @param userIdList 角色关联的用户列表
+     */
+    void changeRoleUsers(int roleId, List<Integer> userIdList);
+
 }
