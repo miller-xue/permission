@@ -4,10 +4,11 @@ import com.google.common.collect.Lists;
 import com.miller.Exception.ParamException;
 import com.miller.common.RequestHolder;
 import com.miller.dao.SysAclMapper;
+import com.miller.dao.SysRoleAclMapper;
 import com.miller.dao.SysRoleMapper;
 import com.miller.dto.AclDto;
 import com.miller.dto.AclModuleLevelDto;
-import com.miller.enums.ResultEnum;
+import com.miller.enums.result.RoleResult;
 import com.miller.model.SysAcl;
 import com.miller.model.SysRole;
 import com.miller.param.RoleParam;
@@ -16,6 +17,7 @@ import com.miller.service.SysRoleService;
 import com.miller.util.BeanValidator;
 import com.miller.util.IpUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
@@ -42,6 +44,9 @@ public class SysRoleServiceImpl implements SysRoleService {
     @Resource
     private SysAclMapper sysAclMapper;
 
+    @Resource
+    private SysRoleAclMapper sysRoleAclMapper;
+
     @Override
     public void save(RoleParam param) {
         // 1.参数校验
@@ -50,7 +55,7 @@ public class SysRoleServiceImpl implements SysRoleService {
         SysRole role = param2Role(param);
         // 3.判断全局角色名是否重复
         if (checkExist(role.getName(), role.getId())) {
-            throw new ParamException(ResultEnum.ROLE_NAME_EXIST);
+            throw new ParamException(RoleResult.ROLE_NAME_EXIST);
         }
         // 4.保存
         sysRoleMapper.insertSelective(role);
@@ -64,7 +69,7 @@ public class SysRoleServiceImpl implements SysRoleService {
         // 2.查询未修改前对象,判断是否存在.不存在抛出异常
         SysRole before = sysRoleMapper.selectByPrimaryKey(param.getId());
         if (before == null) {
-            throw new ParamException(ResultEnum.ROLE_NOT_EXIST);
+            throw new ParamException(RoleResult.ROLE_NOT_EXIST);
         }
         // 3.参数转对象
         SysRole after = param2Role(param);
@@ -72,7 +77,7 @@ public class SysRoleServiceImpl implements SysRoleService {
         if (!before.getName().equals(after.getName())) {
             // 4.1 修改了名称判断是否唯一 否抛出异常
             if (checkExist(after.getName(), after.getId())) {
-                throw new ParamException(ResultEnum.ROLE_NAME_EXIST);
+                throw new ParamException(RoleResult.ROLE_NAME_EXIST);
             }
         }
         // 5.更新
@@ -120,6 +125,11 @@ public class SysRoleServiceImpl implements SysRoleService {
 
     @Override
     public List<SysRole> getRoleListByAclId(int aclId) {
+        List<Integer> roleIdList = sysRoleAclMapper.selectRoleIdListByAclId(aclId);
+        if (CollectionUtils.isEmpty(roleIdList)) {
+            return Lists.newArrayList();
+        }
+
         return sysRoleMapper.selectListByAclId(aclId);
     }
 

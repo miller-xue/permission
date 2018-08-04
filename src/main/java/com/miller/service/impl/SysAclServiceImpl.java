@@ -6,15 +6,14 @@ import com.miller.common.PageResult;
 import com.miller.common.RequestHolder;
 import com.miller.dao.SysAclMapper;
 import com.miller.dao.SysAclModuleMapper;
-import com.miller.enums.ResultEnum;
+import com.miller.enums.result.AclModuleResult;
+import com.miller.enums.result.AclResult;
 import com.miller.model.SysAcl;
 import com.miller.model.SysAclModule;
 import com.miller.param.AclParam;
-import com.miller.service.SysAclModuleService;
 import com.miller.service.SysAclService;
 import com.miller.util.BeanValidator;
 import com.miller.util.IpUtil;
-import com.mysql.fabric.xmlrpc.base.Param;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
@@ -41,11 +40,11 @@ public class SysAclServiceImpl implements SysAclService {
         BeanValidator.check(param);
         SysAclModule sysAclModule = moduleMapper.selectByPrimaryKey(param.getAclModuleId());
         if (sysAclModule == null) {
-            throw new ParamException(ResultEnum.ACL_MODULE_NOT_EXIST);
+            throw new ParamException(AclModuleResult.ACL_MODULE_NOT_EXIST);
         }
 
         if (checkExist(param.getAclModuleId(), param.getName(), param.getId())) {
-            throw new ParamException(ResultEnum.ACL_NAME_EXIST);
+            throw new ParamException(AclResult.ACL_NAME_EXIST);
         }
         SysAcl sysAcl = param2Model(param);
         sysAcl.setCode(gererateCode());
@@ -56,21 +55,22 @@ public class SysAclServiceImpl implements SysAclService {
         BeanValidator.check(param);
         SysAcl before = sysAclMapper.selectByPrimaryKey(param.getId());
         if (before == null) {
-            throw new ParamException(ResultEnum.ACL_NOT_EXIST);
+            throw new ParamException(AclResult.ACL_NOT_EXIST);
         }
 
         SysAclModule sysAclModule = moduleMapper.selectByPrimaryKey(param.getAclModuleId());
         if (sysAclModule == null) {
-            throw new ParamException(ResultEnum.ACL_MODULE_NOT_EXIST);
+            throw new ParamException(AclModuleResult.ACL_MODULE_NOT_EXIST);
         }
         if (checkExist(param.getAclModuleId(), param.getName(), param.getId())) {
-            throw new ParamException(ResultEnum.ACL_NAME_EXIST);
+            throw new ParamException(AclResult.ACL_NAME_EXIST);
         }
         SysAcl after = param2Model(param);
 
         sysAclMapper.updateByPrimaryKeySelective(after);
     }
 
+    @Override
     public PageResult<SysAcl> getPageByAclModuleId(int aclModuleId, PageQuery pageQuery) {
         BeanValidator.check(pageQuery);
         int count = sysAclMapper.countByAclModuleId(aclModuleId);

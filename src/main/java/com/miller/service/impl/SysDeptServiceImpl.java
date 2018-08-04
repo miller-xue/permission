@@ -1,15 +1,13 @@
 package com.miller.service.impl;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
-import com.miller.Exception.JsonException;
 import com.miller.Exception.ParamException;
 import com.miller.common.RequestHolder;
 import com.miller.constant.SysConstans;
 import com.miller.dao.SysDeptMapper;
 import com.miller.dao.SysUserMapper;
 import com.miller.dto.DeptLevelDto;
-import com.miller.enums.ResultEnum;
+import com.miller.enums.result.DeptResult;
 import com.miller.model.SysDept;
 import com.miller.param.DeptParam;
 import com.miller.service.SysDeptService;
@@ -39,18 +37,20 @@ public class SysDeptServiceImpl implements SysDeptService {
     @Resource
     private SysUserMapper sysUserMapper;
 
+    @Override
     public void save(DeptParam param) throws ParamException {
         // 1.参数校验
         BeanValidator.check(param);
         // 2.检查部门名称是否重复
         if (checkExist(param.getParentId(), param.getName(), param.getId())) {
-            throw new ParamException(ResultEnum.DEPT_NAME_EXIST);
+            throw new ParamException(DeptResult.DEPT_NAME_EXIST);
         }
         SysDept dept = param2Model(param);
         dept.setLevel(LevelUtil.caculateLevel(getLevel(param.getParentId()), dept.getParentId()));
         mapper.insertSelective(dept);
     }
 
+    @Override
     public List<DeptLevelDto> deptTree() {
         List<SysDept> deptList = mapper.getAllDept();
         List<DeptLevelDto> dtoList = DeptLevelDto.adaptList(deptList);
@@ -58,6 +58,7 @@ public class SysDeptServiceImpl implements SysDeptService {
 
     }
 
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public void update(DeptParam param) throws ParamException {
         // 1.参数校验
@@ -74,23 +75,23 @@ public class SysDeptServiceImpl implements SysDeptService {
         }
         // 父节点 == 当前待更新对象
         if (after.getParentId().equals(after.getId())) {
-            throw new ParamException(ResultEnum.PARENT_ID_NOT_EQUALS_ID);
+            throw new ParamException(DeptResult.PARENT_ID_NOT_EQUALS_ID);
         }
         // 2.检查父部门是否存在
         if (!after.getParentId().equals(SysConstans.ROOT_PARENT_ID)) {
             SysDept newParent = mapper.selectByPrimaryKey(after.getParentId());
             if (newParent == null) {
-                throw new ParamException(ResultEnum.PARENT_NOT_EXIST);
+                throw new ParamException(DeptResult.PARENT_NOT_EXIST);
             }
             if (newParent.getLevel().indexOf(before.getLevel()) == 0 && newParent.getLevel().length() > before.getLevel().length()) {
-                throw new ParamException(ResultEnum.PARENT_NOT_CHILD);
+                throw new ParamException(DeptResult.PARENT_NOT_CHILD);
             }
         }
 
 
         // 2.检查部门名称是否重复
         if (checkExist(param.getParentId(), param.getName(), param.getId())) {
-            throw new ParamException(ResultEnum.DEPT_NAME_EXIST);
+            throw new ParamException(DeptResult.DEPT_NAME_EXIST);
         }
         after.setLevel(LevelUtil.caculateLevel(getLevel(after.getParentId()), after.getParentId()));
         // 更新之后的值
@@ -124,15 +125,15 @@ public class SysDeptServiceImpl implements SysDeptService {
         SysDept dept = mapper.selectByPrimaryKey(deptId);
         // 不存在无法删除
         if (dept == null) {
-            throw new ParamException(ResultEnum.DEPT_NOT_EXIST);
+            throw new ParamException(DeptResult.DEPT_NOT_EXIST);
         }
         // 有子部门无法删除
         if (mapper.countByParentId(deptId) > 0) {
-            throw new ParamException(ResultEnum.DEPT_HAS_CHILD);
+            throw new ParamException(DeptResult.DEPT_HAS_CHILD);
         }
         // 有用户无法删除
         if (sysUserMapper.countByDeptId(deptId) > 0) {
-            throw new ParamException(ResultEnum.DEPT_HAS_USER);
+            throw new ParamException(DeptResult.DEPT_HAS_USER);
         }
         mapper.deleteByPrimaryKey(deptId);
     }

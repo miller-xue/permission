@@ -2,6 +2,7 @@ package com.miller.util;
 
 import org.apache.commons.lang3.StringUtils;
 
+import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
@@ -51,5 +52,13 @@ public class SysUtil {
             chars[0] = (char)(chars[0] - 32);
         }
         return new String(chars);
+    }
+
+    public static boolean isAjax(HttpServletRequest request) {
+        String xReq = request.getHeader("x-requested-with");
+        if (xReq != null && !xReq.trim().equals("") && "XMLHttpRequest".equalsIgnoreCase(xReq)) {
+            return true;
+        }
+        return false;
     }
 }

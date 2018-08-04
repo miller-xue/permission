@@ -2,9 +2,12 @@ package com.miller.util;
 
 import com.miller.common.Result;
 import com.miller.enums.ResultEnum;
+import com.miller.enums.result.SysResult;
 
 /**
  * Created by miller on 2018/7/22
+ * @author Miller
+ * Result返回工具类
  */
 public class ResultUtil {
     private ResultUtil() {
@@ -13,7 +16,7 @@ public class ResultUtil {
 
 
     public static Result buildSuccess() {
-        return buildSuccess(null, ResultEnum.SUCCESS.getMsg(), ResultEnum.SUCCESS.getCode());
+        return buildSuccess(null, SysResult.SUCCESS.getMsg(), SysResult.SUCCESS.getCode());
     }
 
     public static Result buildSuccess(Object data, String msg, Integer code) {
@@ -25,7 +28,7 @@ public class ResultUtil {
     }
 
     public static Result buildSuccess(Object data) {
-        return buildSuccess(data, ResultEnum.SUCCESS.getMsg(), ResultEnum.SUCCESS.getCode());
+        return buildSuccess(data, SysResult.SUCCESS.getMsg(), SysResult.SUCCESS.getCode());
     }
 
 

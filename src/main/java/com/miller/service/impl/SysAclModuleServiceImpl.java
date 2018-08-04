@@ -6,8 +6,7 @@ import com.miller.constant.SysConstans;
 import com.miller.dao.SysAclMapper;
 import com.miller.dao.SysAclModuleMapper;
 import com.miller.dto.AclModuleLevelDto;
-import com.miller.dto.DeptLevelDto;
-import com.miller.enums.ResultEnum;
+import com.miller.enums.result.AclModuleResult;
 import com.miller.model.SysAclModule;
 import com.miller.param.AclModuleParam;
 import com.miller.service.SysAclModuleService;
@@ -46,7 +45,7 @@ public class SysAclModuleServiceImpl implements SysAclModuleService {
         BeanValidator.check(param);
 
         if (checkExist(param.getParentId(), param.getName(), param.getId())) {
-            throw new ParamException(ResultEnum.ACL_MODULE_NAME_EXIST);
+            throw new ParamException(AclModuleResult.ACL_MODULE_NAME_EXIST);
         }
         SysAclModule sysAclModule = param2Model(param);
         SysAclModule parentModule = null;
@@ -54,7 +53,7 @@ public class SysAclModuleServiceImpl implements SysAclModuleService {
         if (!param.getParentId().equals(SysConstans.ROOT_PARENT_ID)) {
             parentModule = sysAclModuleMapper.selectByPrimaryKey(param.getParentId());
             if (parentModule == null) {
-                throw new ParamException(ResultEnum.PARENT_NOT_EXIST);
+                throw new ParamException(AclModuleResult.PARENT_NOT_EXIST);
             }
             sysAclModule.setLevel(LevelUtil.caculateLevel(parentModule.getLevel(), parentModule.getId()));
         }else {
@@ -79,7 +78,7 @@ public class SysAclModuleServiceImpl implements SysAclModuleService {
         BeanValidator.check(param);
         SysAclModule before = sysAclModuleMapper.selectByPrimaryKey(param.getId());
         if (before == null) {
-            throw new ParamException(ResultEnum.ACL_MODULE_NOT_EXIST);
+            throw new ParamException(AclModuleResult.ACL_MODULE_NOT_EXIST);
         }
         SysAclModule after = param2Model(param);
         // 没有修改部门
@@ -89,7 +88,7 @@ public class SysAclModuleServiceImpl implements SysAclModuleService {
         }
         // 当前id父节点不能是自己
         if (after.getParentId().equals(after.getId())) {
-            throw new ParamException(ResultEnum.PARENT_ID_NOT_EQUALS_ID);
+            throw new ParamException(AclModuleResult.PARENT_ID_NOT_EQUALS_ID);
         }
         // 检查父节点是否存在
         SysAclModule afterParent = null;
@@ -97,11 +96,11 @@ public class SysAclModuleServiceImpl implements SysAclModuleService {
             afterParent = sysAclModuleMapper.selectByPrimaryKey(after.getParentId());
             // 判断父节点是否存在
             if (afterParent == null) {
-                throw new ParamException(ResultEnum.PARENT_NOT_EXIST);
+                throw new ParamException(AclModuleResult.PARENT_NOT_EXIST);
             }
             // 子节点不能为当前的父节点
             if (afterParent.getLevel().indexOf(before.getLevel()) == 0 && afterParent.getLevel().length() > before.getLevel().length()) {
-                throw new ParamException(ResultEnum.PARENT_NOT_CHILD);
+                throw new ParamException(AclModuleResult.PARENT_NOT_CHILD);
             }
             after.setLevel(LevelUtil.caculateLevel(afterParent.getLevel(), afterParent.getId()));
         }else {
@@ -109,7 +108,7 @@ public class SysAclModuleServiceImpl implements SysAclModuleService {
         }
 
         if (checkExist(param.getParentId(), param.getName(), param.getId())) {
-            throw new ParamException(ResultEnum.ACL_MODULE_NAME_EXIST);
+            throw new ParamException(AclModuleResult.ACL_MODULE_NAME_EXIST);
         }
 
         updateWithChild(before, after);
@@ -143,13 +142,13 @@ public class SysAclModuleServiceImpl implements SysAclModuleService {
     public void delete(int aclModuleId) {
         SysAclModule sysAclModule = sysAclModuleMapper.selectByPrimaryKey(aclModuleId);
         if (sysAclModule == null) {
-            throw new ParamException(ResultEnum.ACL_MODULE_NOT_EXIST);
+            throw new ParamException(AclModuleResult.ACL_MODULE_NOT_EXIST);
         }
         if (sysAclModuleMapper.countByParentId(aclModuleId) > 0) {
-            throw new ParamException(ResultEnum.ACL_MODULE_HAS_CHILD);
+            throw new ParamException(AclModuleResult.ACL_MODULE_HAS_CHILD);
         }
         if (sysAclMapper.countByAclModuleId(aclModuleId) > 0) {
-            throw new ParamException(ResultEnum.ACL_MODULE_HAS_ACL);
+            throw new ParamException(AclModuleResult.ACL_MODULE_HAS_ACL);
         }
         sysAclModuleMapper.deleteByPrimaryKey(aclModuleId);
     }

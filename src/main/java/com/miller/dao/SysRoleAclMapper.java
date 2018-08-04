@@ -38,4 +38,11 @@ public interface SysRoleAclMapper {
      * @param roleAclList
      */
     void batchInsert(@Param("roleAclList") List<SysRoleAcl> roleAclList);
+
+    /**
+     * 根据权限点id查询角色列表
+     * @param aclId 权限点id
+     * @return
+     */
+    List<Integer> selectRoleIdListByAclId(@Param("aclId") int aclId);
 }

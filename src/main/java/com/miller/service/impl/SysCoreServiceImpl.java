@@ -19,6 +19,9 @@ import javax.annotation.Resource;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 /**
  * Created by miller on 2018/7/31
@@ -55,7 +58,8 @@ public class SysCoreServiceImpl implements SysCoreService {
 
     @Override
     public boolean isSuperAdmin() {
-        return true;
+        //TODO
+        return false;
     }
 
     @Override
@@ -75,6 +79,43 @@ public class SysCoreServiceImpl implements SysCoreService {
         bindAclListWithOrder(aclModuleList, moduleIdAclMap);
 
         return TreeBuilder.makeTreeList(aclModuleList, "id", "parentId");
+    }
+
+    /**
+     * 扩展点 用户部门权限
+     * @param url
+     * @return
+     */
+    @Override
+    public boolean hasUrlAcl(String url) {
+        if (isSuperAdmin()) {
+            return true;
+        }
+        // 如果未空代表 不管理这个url
+        List<SysAcl> aclList = sysAclMapper.selectByUrl(url);
+        if (CollectionUtils.isEmpty(aclList)) {
+            return true;
+        }
+        List<SysAcl> userAclList = getCurrentUserAclList();
+        Set<Integer> userAclIdSet = userAclList.stream().map(acl -> acl.getId()).collect(Collectors.toSet());
+
+        // 规制：只要有一个权限点有权限,那么我们就认为有访问权限
+        boolean hasValidAcl = false;
+        for (SysAcl acl : aclList) {
+            //判断一个用户是否具有某个权限点的访问权限
+            if (acl == null || acl.getStatus() != 1) { // 权限点无效
+                continue;
+            }
+            hasValidAcl = true;
+            if (userAclIdSet.contains(acl.getId())) {
+                return true;
+            }
+            if (!hasValidAcl) {
+                return true;
+            }
+
+        }
+        return false;
     }
 
     /**

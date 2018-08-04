@@ -243,4 +243,11 @@
       where role_id = #{roleId}
     )
   </select>
+
+  <select id="selectByUrl" resultMap="BaseResultMap" parameterType="string">
+    select
+    <include refid="Base_Column_List" />
+    from sys_acl
+    where url = #{url} <!-- url is not null and url != '' and #{url} REGEXP url -->
+  </select>
 </mapper>

@@ -39,6 +39,11 @@ public class SysUserController {
         return ResultUtil.buildSuccess();
     }
 
+    @RequestMapping(value = "/noAuth")
+    public String noAuth() {
+        return "noAuth";
+    }
+
 
     @RequestMapping(value = "/update", method = RequestMethod.POST)
     @ResponseBody

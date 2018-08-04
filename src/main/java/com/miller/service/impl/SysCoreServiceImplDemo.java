@@ -78,5 +78,10 @@ public class SysCoreServiceImplDemo implements SysCoreService {
         return null;
     }
 
+    @Override
+    public boolean hasUrlAcl(String url) {
+        return false;
+    }
+
 
 }

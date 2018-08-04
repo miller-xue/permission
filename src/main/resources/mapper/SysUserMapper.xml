@@ -226,7 +226,7 @@
     select <include refid="Base_Column_List"/>
     FROM sys_user
     where id in (
-      select user_id from sys_role_user where role_id in (
+      select DISTINCT  user_id from sys_role_user where role_id in (
         select role_id from sys_role_acl where acl_id = #{aclId}
       )
     )

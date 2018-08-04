@@ -82,7 +82,7 @@ public interface SysUserMapper {
     List<SysUser> selectAll();
 
     /**
-     *
+     * 拥有该权限的用户列表
      * @param aclId 权限id
      * @return 拥有该权限的用户列表
      */

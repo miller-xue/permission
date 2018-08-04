@@ -5,7 +5,7 @@ import com.miller.Exception.PageException;
 import com.miller.Exception.ParamException;
 import com.miller.common.Result;
 import com.miller.constant.SysConstans;
-import com.miller.enums.ResultEnum;
+import com.miller.enums.result.SysResult;
 import com.miller.util.ResultUtil;
 import com.miller.util.SysUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -79,19 +79,10 @@ public class PermissionExceptionHandler {
     public ModelAndView handleException(Exception e, HttpServletRequest request) {
         ModelAndView modelAndView = null;
         String viewName = "exception";
-        if (isAjax(request)) {
+        if (SysUtil.isAjax(request)) {
             viewName = SysConstans.JSON_VIEW_NAME;
         }
         log.error("exception:{} ",e);
-        return new ModelAndView(viewName, SysUtil.object2Map(ResultUtil.buildFail(ResultEnum.INNER_ERROR)));
-    }
-
-
-    private static boolean isAjax(HttpServletRequest request) {
-        String xReq = request.getHeader("x-requested-with");
-        if (xReq != null && !xReq.trim().equals("") && "XMLHttpRequest".equalsIgnoreCase(xReq)) {
-            return true;
-        }
-        return false;
+        return new ModelAndView(viewName, SysUtil.object2Map(ResultUtil.buildFail(SysResult.INNER_ERROR)));
     }
 }

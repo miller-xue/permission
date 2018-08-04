@@ -68,7 +68,6 @@ public class SysAclController {
     @RequestMapping("/acls")
     @ResponseBody
     public Result acls(@RequestParam("aclId") int aclId) {
-        // TODO
         Map<String, Object> map = Maps.newHashMap();
         map.put("roles", roleService.getRoleListByAclId(aclId));
         map.put("users", sysUserService.getListByAclId(aclId));

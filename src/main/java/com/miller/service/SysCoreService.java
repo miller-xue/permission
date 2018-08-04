@@ -46,4 +46,11 @@ public interface SysCoreService {
      * @return
      */
     List<AclModuleLevelDto> aclListToTree(List<AclDto> aclDtoList);
+
+    /**
+     * 判断这个url是否有权限
+     * @param url
+     * @return
+     */
+    boolean hasUrlAcl(String url);
 }

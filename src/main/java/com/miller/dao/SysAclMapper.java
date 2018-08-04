@@ -71,4 +71,12 @@ public interface SysAclMapper {
      * @return
      */
     List<SysAcl> selectAclListByRoleId(@Param("roleId") int roleId);
+
+
+    /**
+     * 根据url查询acl列表
+     * @param url url
+     * @return
+     */
+    List<SysAcl> selectByUrl(@Param("url") String url);
 }

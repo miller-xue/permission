@@ -5,6 +5,8 @@ import java.util.Random;
 
 /**
  * Created by miller on 2018/7/25
+ * @author Miller
+ * 随机生成密码
  */
 public class PasswordUtil {
     public final static String[] word = {

@@ -8,12 +8,11 @@ import com.miller.common.RequestHolder;
 import com.miller.dao.SysUserMapper;
 import com.miller.dto.AclDto;
 import com.miller.dto.AclModuleLevelDto;
-import com.miller.enums.ResultEnum;
+import com.miller.enums.result.UserResult;
 import com.miller.model.SysAcl;
 import com.miller.model.SysUser;
 import com.miller.param.UserParam;
 import com.miller.service.SysCoreService;
-import com.miller.service.SysRoleService;
 import com.miller.service.SysUserService;
 import com.miller.util.BeanValidator;
 import com.miller.util.IpUtil;
@@ -47,10 +46,10 @@ public class SysUserServiceImpl implements SysUserService {
         // 1.参数校验
         BeanValidator.check(param);
         if (checkTelephoneExist(param.getTelephone(), param.getId())) {
-            throw new ParamException(ResultEnum.USER_TELEPHONE_EXIST);
+            throw new ParamException(UserResult.USER_TELEPHONE_EXIST);
         }
         if (checkEmailExist(param.getMail(), param.getId())) {
-            throw new ParamException(ResultEnum.USER_EMAIL_EXIST);
+            throw new ParamException(UserResult.USER_EMAIL_EXIST);
         }
         SysUser sysUser = param2SysUser(param);
         // 密码加密
@@ -64,15 +63,15 @@ public class SysUserServiceImpl implements SysUserService {
         // 1.参数校验
         BeanValidator.check(param);
         if (checkTelephoneExist(param.getTelephone(), param.getId())) {
-            throw new ParamException(ResultEnum.USER_TELEPHONE_EXIST);
+            throw new ParamException(UserResult.USER_TELEPHONE_EXIST);
         }
         if (checkEmailExist(param.getMail(), param.getId())) {
-            throw new ParamException(ResultEnum.USER_EMAIL_EXIST);
+            throw new ParamException(UserResult.USER_EMAIL_EXIST);
         }
         // 2. 查询待更新的用户是否存在
         SysUser before = userMapper.selectByPrimaryKey(param.getId());
         if (before == null) {
-            throw new ParamException(ResultEnum.USER_NOT_EXIST);
+            throw new ParamException(UserResult.USER_NOT_EXIST);
         }
         // 更新后的对象
         SysUser after = param2SysUser(param);
