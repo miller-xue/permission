@@ -47,6 +47,15 @@ public class TreeBuilder {
         return treeNodeList;
     }
 
+    /**
+     * 重写递归TODO 排序递归
+     * @param list
+     * @param idAttribute
+     * @param parentIdAttribute
+     * @param comparable
+     * @param <T>
+     * @return
+     */
     public static <T> List<T> makeTreeListByRecursion(List<T> list, String idAttribute,
                                                       String parentIdAttribute,Comparable<T> comparable) {
         if (CollectionUtils.isEmpty(list) || StringUtils.isBlank(idAttribute)

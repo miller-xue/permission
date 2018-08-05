@@ -34,15 +34,19 @@ public class SysRoleUserServiceImpl implements SysRoleUserService {
 
     @Override
     public List<SysUser> getListByRoleId(int roleId) {
+        // 根据角色id 查询所有 角色对应的用户
+        // 1.查询出角色关联的用户idlist
         List<Integer> userIdList = sysRoleUserMapper.selectUserIdListByRoleId(roleId);
         if (CollectionUtils.isEmpty(userIdList)) {
             return Lists.newArrayList();
         }
+        // 2，查询用户列表
         return sysUserMapper.selectByIdList(userIdList);
     }
 
 
     @Override
+    @Transactional
     public void changeRoleUsers(int roleId, List<Integer> userIdList) {
         // 已存在的用户id列表
         List<Integer> originUserIdList = sysRoleUserMapper.selectUserIdListByRoleId(roleId);
@@ -60,8 +64,8 @@ public class SysRoleUserServiceImpl implements SysRoleUserService {
 
     }
 
-    @Transactional
-    public void updateRoleUsers(int roleId, List<Integer> userIdList) {
+
+    private void updateRoleUsers(int roleId, List<Integer> userIdList) {
         sysRoleUserMapper.deleteByRoleId(roleId);
         if (CollectionUtils.isEmpty(userIdList)) {
             return;

@@ -36,44 +36,55 @@ public class SysAclServiceImpl implements SysAclService {
     @Resource
     SysAclModuleMapper moduleMapper;
 
+    @Override
     public void save(AclParam param) {
+        // 1.参数校验
         BeanValidator.check(param);
+        // 2.校验权限模块是否未空
         SysAclModule sysAclModule = moduleMapper.selectByPrimaryKey(param.getAclModuleId());
         if (sysAclModule == null) {
             throw new ParamException(AclModuleResult.ACL_MODULE_NOT_EXIST);
         }
-
+        // 3.同一权限模块下权限名唯一
         if (checkExist(param.getAclModuleId(), param.getName(), param.getId())) {
             throw new ParamException(AclResult.ACL_NAME_EXIST);
         }
         SysAcl sysAcl = param2Model(param);
+        // 补充编码数据
         sysAcl.setCode(gererateCode());
+
         sysAclMapper.insertSelective(sysAcl);
     }
 
+    @Override
     public void update(AclParam param) {
+        // 1.参数校验
         BeanValidator.check(param);
+        // 2.判断被修改的对象是否未空
         SysAcl before = sysAclMapper.selectByPrimaryKey(param.getId());
         if (before == null) {
             throw new ParamException(AclResult.ACL_NOT_EXIST);
         }
-
+        // 3.权限模块是否为空
         SysAclModule sysAclModule = moduleMapper.selectByPrimaryKey(param.getAclModuleId());
         if (sysAclModule == null) {
             throw new ParamException(AclModuleResult.ACL_MODULE_NOT_EXIST);
         }
+        // 4.同一权限模块下权限名唯一
         if (checkExist(param.getAclModuleId(), param.getName(), param.getId())) {
             throw new ParamException(AclResult.ACL_NAME_EXIST);
         }
         SysAcl after = param2Model(param);
-
         sysAclMapper.updateByPrimaryKeySelective(after);
     }
 
     @Override
     public PageResult<SysAcl> getPageByAclModuleId(int aclModuleId, PageQuery pageQuery) {
+        // 1.参数校验
         BeanValidator.check(pageQuery);
+        // 2.查询总数
         int count = sysAclMapper.countByAclModuleId(aclModuleId);
+        // 3.总数大于0开始分页查询数据库
         if (count > 0) {
             List<SysAcl> aclList = sysAclMapper.getPageByAclModuleId(aclModuleId, pageQuery);
             return PageResult.<SysAcl>builder().data(aclList).total(count).build();

@@ -1,5 +1,6 @@
 package com.miller.util;
 
+import com.google.common.collect.Maps;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
@@ -22,7 +23,7 @@ public class SysUtil {
      */
     public static Map<String, Object> object2Map(Object object) {
         if (object == null) {
-            return new HashMap<String, Object>(0);
+            return Maps.newHashMap();
         }
         Field[] declaredFields = object.getClass().getDeclaredFields();
         Map<String, Object> result = new HashMap<String, Object>(declaredFields.length);

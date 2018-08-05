@@ -8,6 +8,7 @@ import java.util.List;
 
 /**
  * Created by miller on 2018/7/22
+ * @author Miller
  */
 public class BaseTree<T> {
     @Getter

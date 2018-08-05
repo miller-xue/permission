@@ -89,6 +89,7 @@ public class SysRoleServiceImpl implements SysRoleService {
         return sysRoleMapper.selectAll();
     }
 
+
     @Override
     public List<AclModuleLevelDto> roleTree(int roleId) {
         // 1.当前用户已分配的权限点
@@ -120,16 +121,12 @@ public class SysRoleServiceImpl implements SysRoleService {
 
     @Override
     public List<SysRole> getRoleListByUserId(int userId) {
+        // 根据用户查询用户所属角色列表
         return sysRoleMapper.selectListByUserId(userId);
     }
 
     @Override
     public List<SysRole> getRoleListByAclId(int aclId) {
-        List<Integer> roleIdList = sysRoleAclMapper.selectRoleIdListByAclId(aclId);
-        if (CollectionUtils.isEmpty(roleIdList)) {
-            return Lists.newArrayList();
-        }
-
         return sysRoleMapper.selectListByAclId(aclId);
     }
 

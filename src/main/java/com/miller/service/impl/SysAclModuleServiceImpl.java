@@ -42,16 +42,13 @@ public class SysAclModuleServiceImpl implements SysAclModuleService {
 
     @Override
     public void save(AclModuleParam param) throws ParamException {
+        // 1.必填参数校验
         BeanValidator.check(param);
-
-        if (checkExist(param.getParentId(), param.getName(), param.getId())) {
-            throw new ParamException(AclModuleResult.ACL_MODULE_NAME_EXIST);
-        }
+        // 2.对象转换
         SysAclModule sysAclModule = param2Model(param);
-        SysAclModule parentModule = null;
-        // 判断父节点是否存在
+        // 3.判断父节点是否存在 && 计算level level == 上级level . 上级id
         if (!param.getParentId().equals(SysConstans.ROOT_PARENT_ID)) {
-            parentModule = sysAclModuleMapper.selectByPrimaryKey(param.getParentId());
+            SysAclModule  parentModule = sysAclModuleMapper.selectByPrimaryKey(param.getParentId());
             if (parentModule == null) {
                 throw new ParamException(AclModuleResult.PARENT_NOT_EXIST);
             }
@@ -59,41 +56,50 @@ public class SysAclModuleServiceImpl implements SysAclModuleService {
         }else {
             sysAclModule.setLevel(LevelUtil.caculateLevel(getLevel(sysAclModule.getParentId()), sysAclModule.getParentId()));
         }
+        // 4.判断父节点下名称是否唯一
+        if (checkExist(param.getParentId(), param.getName(), param.getId())) {
+            throw new ParamException(AclModuleResult.ACL_MODULE_NAME_EXIST);
+        }
 
-        // 计算level level == 上级level . 上级id
+
         sysAclModuleMapper.insertSelective(sysAclModule);
     }
 
     @Override
     public List<AclModuleLevelDto> aclModuleTree() {
+        // 1.查询所有权限模块
         List<SysAclModule> allAclModule = sysAclModuleMapper.getAllAclModule();
+        // 2.转换成DTO
         List<AclModuleLevelDto> dtoList = AclModuleLevelDto.adaptList(allAclModule);
-
+        // 3.使用工具拼装成树
         return TreeBuilder.makeTreeList(dtoList,"id","parentId");
     }
 
     @Override
     @Transactional
     public void update(AclModuleParam param) throws ParamException {
+        // 1.必填参数校验
         BeanValidator.check(param);
+        // 2.判断被修改的对象是否存在
         SysAclModule before = sysAclModuleMapper.selectByPrimaryKey(param.getId());
         if (before == null) {
             throw new ParamException(AclModuleResult.ACL_MODULE_NOT_EXIST);
         }
+
         SysAclModule after = param2Model(param);
-        // 没有修改部门
+        // 3.没有修改部门
         if (after.getParentId().equals(before.getParentId())) {
             sysAclModuleMapper.updateByPrimaryKeySelective(after);
             return;
         }
-        // 当前id父节点不能是自己
+
+        // 3.当前id父节点不能是自己
         if (after.getParentId().equals(after.getId())) {
             throw new ParamException(AclModuleResult.PARENT_ID_NOT_EQUALS_ID);
         }
-        // 检查父节点是否存在
-        SysAclModule afterParent = null;
+        // 3.检查父节点是否存在
         if (!after.getParentId().equals(SysConstans.ROOT_PARENT_ID)) {
-            afterParent = sysAclModuleMapper.selectByPrimaryKey(after.getParentId());
+            SysAclModule afterParent = sysAclModuleMapper.selectByPrimaryKey(after.getParentId());
             // 判断父节点是否存在
             if (afterParent == null) {
                 throw new ParamException(AclModuleResult.PARENT_NOT_EXIST);
@@ -107,6 +113,7 @@ public class SysAclModuleServiceImpl implements SysAclModuleService {
             after.setLevel(LevelUtil.caculateLevel(getLevel(after.getParentId()),after.getParentId()));
         }
 
+        // 判断同父节点下名称是否唯一
         if (checkExist(param.getParentId(), param.getName(), param.getId())) {
             throw new ParamException(AclModuleResult.ACL_MODULE_NAME_EXIST);
         }
@@ -122,8 +129,12 @@ public class SysAclModuleServiceImpl implements SysAclModuleService {
      * @param after
      */
     private void updateWithChild(SysAclModule before, SysAclModule after) {
+        // 修改前level
         String oldLevelPrefix = before.getLevel();
+        // 修改后的level
         String newLevelPrefix = after.getLevel();
+
+        // 查询出所有修改对象的子节点，不包括自己
         List<SysAclModule> childList = sysAclModuleMapper.getChildAclModuleListByLevel(oldLevelPrefix + before.getId());
         if (CollectionUtils.isNotEmpty(childList)) {
             for (SysAclModule aclModule : childList) {
@@ -141,23 +152,28 @@ public class SysAclModuleServiceImpl implements SysAclModuleService {
     @Override
     public void delete(int aclModuleId) {
         SysAclModule sysAclModule = sysAclModuleMapper.selectByPrimaryKey(aclModuleId);
+        // 1.删除的对象是否为空
         if (sysAclModule == null) {
             throw new ParamException(AclModuleResult.ACL_MODULE_NOT_EXIST);
         }
+        // 2.删除的对象是否有子节点
         if (sysAclModuleMapper.countByParentId(aclModuleId) > 0) {
             throw new ParamException(AclModuleResult.ACL_MODULE_HAS_CHILD);
         }
+        // 3.删除的对象下是否有acl
         if (sysAclMapper.countByAclModuleId(aclModuleId) > 0) {
             throw new ParamException(AclModuleResult.ACL_MODULE_HAS_ACL);
         }
         sysAclModuleMapper.deleteByPrimaryKey(aclModuleId);
     }
+
     /**
      * 获得指定对象的level
      * @param aclModuleId
      * @return
      */
-    public String getLevel(Integer aclModuleId) {
+    private String getLevel(Integer aclModuleId) {
+        // 父节点无level
         if (aclModuleId.equals(SysConstans.ROOT_PARENT_ID)) {
             return null;
         }

@@ -22,4 +22,14 @@ public interface SysConstans {
      * 父节点的根节点
      */
     Integer ROOT_PARENT_ID = 0;
+
+    /**
+     * 有效
+     */
+    Integer STATUS_EFFECTIVE = 1;
+
+    /**
+     * 无效
+     */
+    Integer STATUS_INVALID = 0;
 }

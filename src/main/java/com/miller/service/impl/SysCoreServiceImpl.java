@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 
 /**
  * Created by miller on 2018/7/31
+ * 系统核心服务层
  * @author Miller
  */
 @Service
@@ -38,8 +39,19 @@ public class SysCoreServiceImpl implements SysCoreService {
 
     @Override
     public List<SysAcl> getCurrentUserAclList() {
+        // 1.从当前线程Holder中取出当前登陆用户
         int userId = RequestHolder.getCurrentUser().getId();
         return getUserAclList(userId);
+    }
+
+    @Override
+    public List<SysAcl> getUserAclList(int userId) {
+        //1. 如果用户是超级管理员,取出来所有acl数据
+        if (isSuperAdmin()) {
+            return sysAclMapper.selectAll();
+        }
+        // sql 内解决查询多个表问题
+        return sysAclMapper.selectAclListByUserId(userId);
     }
 
     @Override
@@ -47,76 +59,36 @@ public class SysCoreServiceImpl implements SysCoreService {
         return sysAclMapper.selectAclListByRoleId(roleId);
     }
 
-    @Override
-    public List<SysAcl> getUserAclList(int userId) {
-        if (isSuperAdmin()) {
-            //1. 如果用户是超级管理员,取出来所有acl数据
-            return sysAclMapper.selectAll();
-        }
-        return sysAclMapper.selectAclListByUserId(userId);
-    }
 
     @Override
     public boolean isSuperAdmin() {
-        //TODO
+        //TODO 自己写核心逻辑
         return false;
     }
 
     @Override
     public List<AclModuleLevelDto> aclListToTree(List<AclDto> aclDtoList) {
+        // 1.判断权限是否为空, 权限为空权限树无意义
         if (CollectionUtils.isEmpty(aclDtoList)) {
             return Lists.newArrayList();
         }
+        // 2.查询出所有权限模块列表
         List<AclModuleLevelDto> aclModuleList = AclModuleLevelDto.adaptList(sysAclModuleMapper.getAllAclModule());
 
-
+        // 3.把权限列表 转换成 模块id ：{权限,权限....}结构
         Multimap<Integer, AclDto> moduleIdAclMap = ArrayListMultimap.create();
         for (AclDto aclDto : aclDtoList) {
             if (aclDto.getStatus() == 1) {
                 moduleIdAclMap.put(aclDto.getAclModuleId(), aclDto);
             }
         }
+        // 4.给权限模块绑定权限点
         bindAclListWithOrder(aclModuleList, moduleIdAclMap);
-
+        // 拼装成树
         return TreeBuilder.makeTreeList(aclModuleList, "id", "parentId");
     }
 
-    /**
-     * 扩展点 用户部门权限
-     * @param url
-     * @return
-     */
-    @Override
-    public boolean hasUrlAcl(String url) {
-        if (isSuperAdmin()) {
-            return true;
-        }
-        // 如果未空代表 不管理这个url
-        List<SysAcl> aclList = sysAclMapper.selectByUrl(url);
-        if (CollectionUtils.isEmpty(aclList)) {
-            return true;
-        }
-        List<SysAcl> userAclList = getCurrentUserAclList();
-        Set<Integer> userAclIdSet = userAclList.stream().map(acl -> acl.getId()).collect(Collectors.toSet());
 
-        // 规制：只要有一个权限点有权限,那么我们就认为有访问权限
-        boolean hasValidAcl = false;
-        for (SysAcl acl : aclList) {
-            //判断一个用户是否具有某个权限点的访问权限
-            if (acl == null || acl.getStatus() != 1) { // 权限点无效
-                continue;
-            }
-            hasValidAcl = true;
-            if (userAclIdSet.contains(acl.getId())) {
-                return true;
-            }
-            if (!hasValidAcl) {
-                return true;
-            }
-
-        }
-        return false;
-    }
 
     /**
      * 权限模块绑定权限
@@ -143,4 +115,42 @@ public class SysCoreServiceImpl implements SysCoreService {
             return o1.getSeq() - o2.getSeq();
         }
     };
+
+
+    /**
+     * 扩展点 用户部门权限
+     * @param url
+     * @return
+     */
+    @Override
+    public boolean hasUrlAcl(String url) {
+        // 超级管理员拥有所有权限
+        if (isSuperAdmin()) {
+            return true;
+        }
+        // 如果未空代表权限未曾管理这个url
+        List<SysAcl> aclList = sysAclMapper.selectByUrl(url);
+        if (CollectionUtils.isEmpty(aclList)) {
+            return true;
+        }
+        // 当前用户权限列表（应该登陆时候放在session中）
+        Set<Integer> userAclIdSet = getCurrentUserAclList().stream().map(acl -> acl.getId()).collect(Collectors.toSet());
+
+        // 规制：只要有一个权限点有权限,那么我们就认为有访问权限
+        boolean hasValidAcl = false;
+        for (SysAcl acl : aclList) {
+            //判断一个用户是否具有某个权限点的访问权限
+            if (acl == null || acl.getStatus() != 1) { // 权限点无效
+                continue;
+            }
+            hasValidAcl = true;
+            if (userAclIdSet.contains(acl.getId())) {
+                return true;
+            }
+        }
+        if (!hasValidAcl) {
+            return true;
+        }
+        return false;
+    }
 }

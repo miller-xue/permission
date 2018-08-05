@@ -10,6 +10,7 @@ import org.codehaus.jackson.type.TypeReference;
 
 /**
  * Created by miller on 2018/7/21
+ * TODO 替换这个json工具类
  */
 @Slf4j
 public class JsonMapper {

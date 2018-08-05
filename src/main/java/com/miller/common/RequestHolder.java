@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 
 /**
  * Created by miller on 2018/7/28
+ * 当前请求Request持有人
  * @author Miller
  */
 public class RequestHolder {

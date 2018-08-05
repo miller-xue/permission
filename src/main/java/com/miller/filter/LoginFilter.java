@@ -16,13 +16,16 @@ import java.io.IOException;
 @Slf4j
 public class LoginFilter implements Filter {
 
+    @Override
     public void init(FilterConfig filterConfig) throws ServletException {
 
     }
 
+    @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest req = (HttpServletRequest) servletRequest;
         HttpServletResponse resp = (HttpServletResponse) servletResponse;
+        // TODO 应该从redis集群取出用户对象
         SysUser user = (SysUser) req.getSession().getAttribute("user");
         if (user == null) {
             resp.sendRedirect("signin.jsp");
@@ -33,6 +36,7 @@ public class LoginFilter implements Filter {
         return;
     }
 
+    @Override
     public void destroy() {
 
     }

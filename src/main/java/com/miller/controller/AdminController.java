@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
  * Created by miller on 2018/7/27
- *
+ * 跳转首页Controller
  * @author Miller
  */
 @Controller
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class AdminController {
 
     @RequestMapping("/index")
-    public String index(Model model) {
+    public String index() {
         return "admin";
     }
 }

@@ -3,6 +3,7 @@ package com.miller.util;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.miller.Exception.ParamException;
+import com.miller.enums.result.SysResult;
 import lombok.NonNull;
 import org.apache.commons.collections.MapUtils;
 
@@ -88,7 +89,7 @@ public class BeanValidator {
     public static void check(Object param)throws ParamException{
         Map<String, String> map = validateObject(param);
         if (MapUtils.isNotEmpty(map)) {
-            throw new ParamException(ResultEnum.PARAM_ERROR, map);
+            throw new ParamException(SysResult.PARAM_ERROR, map);
         }
     }
 }

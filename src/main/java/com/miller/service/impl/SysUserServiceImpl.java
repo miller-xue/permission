@@ -45,9 +45,11 @@ public class SysUserServiceImpl implements SysUserService {
     public void save(UserParam param) {
         // 1.参数校验
         BeanValidator.check(param);
+        // 1.电话全局唯一
         if (checkTelephoneExist(param.getTelephone(), param.getId())) {
             throw new ParamException(UserResult.USER_TELEPHONE_EXIST);
         }
+        // 2.邮箱全局唯一
         if (checkEmailExist(param.getMail(), param.getId())) {
             throw new ParamException(UserResult.USER_EMAIL_EXIST);
         }
@@ -62,16 +64,18 @@ public class SysUserServiceImpl implements SysUserService {
     public void update(UserParam param) {
         // 1.参数校验
         BeanValidator.check(param);
-        if (checkTelephoneExist(param.getTelephone(), param.getId())) {
-            throw new ParamException(UserResult.USER_TELEPHONE_EXIST);
-        }
-        if (checkEmailExist(param.getMail(), param.getId())) {
-            throw new ParamException(UserResult.USER_EMAIL_EXIST);
-        }
         // 2. 查询待更新的用户是否存在
         SysUser before = userMapper.selectByPrimaryKey(param.getId());
         if (before == null) {
             throw new ParamException(UserResult.USER_NOT_EXIST);
+        }
+        // 电话全局唯一
+        if (checkTelephoneExist(param.getTelephone(), param.getId())) {
+            throw new ParamException(UserResult.USER_TELEPHONE_EXIST);
+        }
+        // 邮箱全局唯一
+        if (checkEmailExist(param.getMail(), param.getId())) {
+            throw new ParamException(UserResult.USER_EMAIL_EXIST);
         }
         // 更新后的对象
         SysUser after = param2SysUser(param);
@@ -104,6 +108,7 @@ public class SysUserServiceImpl implements SysUserService {
 
     @Override
     public List<AclModuleLevelDto> userAclTree(int userId) {
+        // 查询用户拥有的权限
         List<SysAcl> userAclList = sysCoreService.getUserAclList(userId);
 
         List<AclDto> userAclDtoList = Lists.newArrayList();

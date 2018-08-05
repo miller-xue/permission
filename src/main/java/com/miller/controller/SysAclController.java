@@ -20,6 +20,7 @@ import java.util.Map;
 
 /**
  * Created by miller on 2018/7/28
+ * 权限Controller
  * @author Miller
  */
 @Controller
@@ -52,6 +53,12 @@ public class SysAclController {
         return ResultUtil.buildSuccess();
     }
 
+    /**
+     * 权限点分页json查询
+     * @param aclModuleId
+     * @param pageQuery
+     * @return
+     */
     @RequestMapping(value = "/page", method = RequestMethod.GET)
     @ResponseBody
     public Result page(@RequestParam("aclModuleId") Integer aclModuleId, PageQuery pageQuery) {

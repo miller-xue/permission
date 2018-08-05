@@ -13,9 +13,9 @@ public class LevelUtil {
 
     /**
      * 根据父level 和父id 生成子level-
-     * @param parentLevel
-     * @param parentId
-     * @return
+     * @param parentLevel 父level
+     * @param parentId 父id
+     * @return 子level
      */
     public static String caculateLevel(String parentLevel, int parentId) {
         if (StringUtils.isBlank(parentLevel)) {
@@ -24,8 +24,4 @@ public class LevelUtil {
         return StringUtils.join(parentLevel, SEPARATOR, parentId);
     }
 
-
-    public static void main(String[] args) {
-        System.out.println(caculateLevel(null, 0));
-    }
 }

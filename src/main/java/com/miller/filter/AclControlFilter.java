@@ -11,6 +11,7 @@ import com.miller.service.SysCoreService;
 import com.miller.util.JsonMapper;
 import com.miller.util.ResultUtil;
 import com.miller.util.SpringContextUtil;
+import com.miller.util.SysUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.servlet.*;
@@ -48,14 +49,17 @@ public class AclControlFilter implements Filter {
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
+        // 1.请求URL
         String servletPath = request.getServletPath();
+        // 2.请求参数Map
         Map requestMap = request.getParameterMap();
 
-        // 白名单处理逻辑
+        // 3.白名单处理逻辑
         if (exclusionUrlSet.contains(servletPath)) {
             filterChain.doFilter(servletRequest, servletResponse);
             return;
         }
+        // 从当前线程中取出用户
         SysUser sysUser = RequestHolder.getCurrentUser();
         if (sysUser == null) {
             log.info("someone visit {}, but no login, paramter:{}", servletPath, JsonMapper.obj2String(requestMap));
@@ -78,7 +82,7 @@ public class AclControlFilter implements Filter {
     private void noAuth(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String servletPath = request.getServletPath();
         // 判断是json还是页面请求
-        if (PermissionExceptionHandler.isAjax(request)) {
+        if (SysUtil.isAjax(request)) {
             Result result = ResultUtil.buildFail(SysResult.NO_AUTH);
             response.setHeader("Content-Type", "application/json");
             response.getWriter().print(JsonMapper.obj2String(result));

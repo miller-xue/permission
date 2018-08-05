@@ -11,8 +11,9 @@
 
   <name>permission Maven Webapp</name>
   <url>http://www.example.com</url>
-
   <properties>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
     <springframework.version>4.3.10.RELEASE</springframework.version>
   </properties>
 
@@ -170,6 +171,8 @@
     </dependency>
 
   </dependencies>
+
+
 
   <build>
     <finalName>permission</finalName>

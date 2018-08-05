@@ -132,17 +132,22 @@ public class SysRoleController {
     @RequestMapping("/users")
     @ResponseBody
     public Result users(@RequestParam("roleId") int roleId) {
+        // 1.当前角色选中的用户列表
         List<SysUser> selectedUserList = sysRoleUserService.getListByRoleId(roleId);
+        // 2.所有用户列表
         List<SysUser> allUserList = sysUserService.getAll();
 
+        // TODO 可使用sql进行优化一句话查出来未选中用户列表
         List<SysUser> unselectedUserList = Lists.newArrayList();
         // 选中角色的id Set集合
         Set<Integer> selectedUserIdSet = selectedUserList.stream().map(sysUser -> sysUser.getId()).collect(Collectors.toSet());
+
         for (SysUser sysUser : allUserList) {
             if (sysUser.getStatus() == 1 && !selectedUserIdSet.contains(sysUser.getId())) {
                 unselectedUserList.add(sysUser);
             }
         }
+
         Map<String, List<SysUser>> result = Maps.newHashMap();
         result.put("selected", selectedUserList);
         result.put("unselected", unselectedUserList);
@@ -160,6 +165,7 @@ public class SysRoleController {
     @ResponseBody
     public Result changeUsers(@RequestParam("roleId") int roleId,
                              @RequestParam(value = "userIds", required = false, defaultValue = "") String userIds) {
+        // 参数转换应该放在哪里做 TODO
         List<Integer> userIdList = StringUtil.splitToListInt(userIds);
         sysRoleUserService.changeRoleUsers(roleId, userIdList);
         return ResultUtil.buildSuccess();

@@ -46,20 +46,25 @@ public class SysDeptServiceImpl implements SysDeptService {
             throw new ParamException(DeptResult.DEPT_NAME_EXIST);
         }
         SysDept dept = param2Model(param);
+        // 3.计算部门level
         dept.setLevel(LevelUtil.caculateLevel(getLevel(param.getParentId()), dept.getParentId()));
         mapper.insertSelective(dept);
     }
 
     @Override
     public List<DeptLevelDto> deptTree() {
+        // 1.查询部门列表
         List<SysDept> deptList = mapper.getAllDept();
+        // 2.转换成DTO
         List<DeptLevelDto> dtoList = DeptLevelDto.adaptList(deptList);
+        // 3.拼接成树
         return  TreeBuilder.makeTreeList(dtoList, "id", "parentId");
 
     }
 
+    // TODO
     @Override
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional
     public void update(DeptParam param) throws ParamException {
         // 1.参数校验
         BeanValidator.check(param);
@@ -68,6 +73,8 @@ public class SysDeptServiceImpl implements SysDeptService {
         Preconditions.checkNotNull(before, "待更新的部门不存在");
         // 2.更新之后的值
         SysDept after = param2Model(param);
+
+
         //没有更新父节点
         if (before.getParentId().equals(param.getParentId())) {
             mapper.updateByPrimaryKeySelective(after);
@@ -105,7 +112,7 @@ public class SysDeptServiceImpl implements SysDeptService {
         String oldLevelPrefix = before.getLevel();
 
         // 查询当前待更新节点下所有子部门
-        List<SysDept> childList = mapper.getChildDeptListByLevel(oldLevelPrefix);
+        List<SysDept> childList = mapper.getChildDeptListByLevel(oldLevelPrefix + before.getId());
         if (CollectionUtils.isNotEmpty(childList)) {
             for (SysDept dept : childList) {
                 String level = dept.getLevel();

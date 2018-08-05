@@ -9,6 +9,8 @@ import java.util.Map;
 
 /**
  * Created by miller on 2018/7/21
+ * @author Miller
+ * Json请求返回的封装对象
  */
 @Getter
 @Setter
