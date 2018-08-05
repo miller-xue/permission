@@ -4,14 +4,20 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.miller.common.RequestHolder;
+import com.miller.constant.CatchKeyConstants;
 import com.miller.dao.SysAclMapper;
 import com.miller.dao.SysAclModuleMapper;
 import com.miller.dto.AclDto;
 import com.miller.dto.AclModuleLevelDto;
 import com.miller.model.SysAcl;
+import com.miller.service.SysCatchService;
 import com.miller.service.SysCoreService;
+import com.miller.util.JsonMapper;
+import com.miller.util.StringUtil;
 import com.miller.util.TreeBuilder;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.codehaus.jackson.type.TypeReference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -36,6 +42,9 @@ public class SysCoreServiceImpl implements SysCoreService {
 
     @Resource
     private SysAclModuleMapper sysAclModuleMapper;
+
+    @Resource
+    private SysCatchService catchService;
 
     @Override
     public List<SysAcl> getCurrentUserAclList() {
@@ -89,14 +98,14 @@ public class SysCoreServiceImpl implements SysCoreService {
     }
 
 
-
     /**
      * 权限模块绑定权限
+     *
      * @param aclModuleList
      * @param moduleIdAclMap
      */
     public void bindAclListWithOrder(List<AclModuleLevelDto> aclModuleList, Multimap<Integer, AclDto> moduleIdAclMap) {
-        if(CollectionUtils.isEmpty(aclModuleList)){
+        if (CollectionUtils.isEmpty(aclModuleList)) {
             return;
         }
         for (AclModuleLevelDto aclModuleLevelDto : aclModuleList) {
@@ -119,6 +128,7 @@ public class SysCoreServiceImpl implements SysCoreService {
 
     /**
      * 扩展点 用户部门权限
+     *
      * @param url
      * @return
      */
@@ -134,7 +144,7 @@ public class SysCoreServiceImpl implements SysCoreService {
             return true;
         }
         // 当前用户权限列表（应该登陆时候放在session中）
-        Set<Integer> userAclIdSet = getCurrentUserAclList().stream().map(acl -> acl.getId()).collect(Collectors.toSet());
+        Set<Integer> userAclIdSet = getCurrentUserAclListFormCatch().stream().map(acl -> acl.getId()).collect(Collectors.toSet());
 
         // 规制：只要有一个权限点有权限,那么我们就认为有访问权限
         boolean hasValidAcl = false;
@@ -152,5 +162,19 @@ public class SysCoreServiceImpl implements SysCoreService {
             return true;
         }
         return false;
+    }
+
+    public List<SysAcl> getCurrentUserAclListFormCatch() {
+        int userId = RequestHolder.getCurrentUser().getId();
+        String cacheValue = catchService.getFromCache(CatchKeyConstants.USER_ACLS, String.valueOf(userId));
+        if (StringUtils.isBlank(cacheValue)) {
+            List<SysAcl> aclList = getCurrentUserAclList();
+            if (CollectionUtils.isNotEmpty(aclList)) {
+                catchService.saveCatche(JsonMapper.obj2String(aclList), 10000, CatchKeyConstants.USER_ACLS, String.valueOf(userId));
+            }
+            return aclList;
+        }
+        return JsonMapper.string2Obj(cacheValue, new TypeReference<List<SysAcl>>() {
+        });
     }
 }

@@ -12,7 +12,11 @@
     <param-name>contextConfigLocation</param-name>
     <param-value>classpath:spring/spring.xml</param-value>
   </context-param>
-  <!-- spring 配置文件 -->
+    <context-param>
+        <param-name/>
+        <param-value/>
+    </context-param>
+    <!-- spring 配置文件 -->
   <listener>
     <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
   </listener>
