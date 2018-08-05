@@ -72,7 +72,7 @@ public class SysCoreServiceImpl implements SysCoreService {
     @Override
     public boolean isSuperAdmin() {
         //TODO 自己写核心逻辑
-        return false;
+        return true;
     }
 
     @Override

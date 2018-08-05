@@ -13,6 +13,7 @@ import com.miller.model.SysAcl;
 import com.miller.model.SysRole;
 import com.miller.param.RoleParam;
 import com.miller.service.SysCoreService;
+import com.miller.service.SysLogService;
 import com.miller.service.SysRoleService;
 import com.miller.util.BeanValidator;
 import com.miller.util.IpUtil;
@@ -47,6 +48,9 @@ public class SysRoleServiceImpl implements SysRoleService {
     @Resource
     private SysRoleAclMapper sysRoleAclMapper;
 
+    @Resource
+    private SysLogService sysLogService;
+
     @Override
     public void save(RoleParam param) {
         // 1.参数校验
@@ -59,6 +63,7 @@ public class SysRoleServiceImpl implements SysRoleService {
         }
         // 4.保存
         sysRoleMapper.insertSelective(role);
+        sysLogService.saveRoleLog(null, role);
     }
 
 
@@ -82,6 +87,7 @@ public class SysRoleServiceImpl implements SysRoleService {
         }
         // 5.更新
         sysRoleMapper.updateByPrimaryKeySelective(after);
+        sysLogService.saveRoleLog(before, after);
     }
 
     @Override

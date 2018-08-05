@@ -11,6 +11,7 @@ import com.miller.enums.result.DeptResult;
 import com.miller.model.SysDept;
 import com.miller.param.DeptParam;
 import com.miller.service.SysDeptService;
+import com.miller.service.SysLogService;
 import com.miller.util.BeanValidator;
 import com.miller.util.IpUtil;
 import com.miller.util.LevelUtil;
@@ -37,6 +38,9 @@ public class SysDeptServiceImpl implements SysDeptService {
     @Resource
     private SysUserMapper sysUserMapper;
 
+    @Resource
+    private SysLogService sysLogService;
+
     @Override
     public void save(DeptParam param) throws ParamException {
         // 1.参数校验
@@ -49,6 +53,7 @@ public class SysDeptServiceImpl implements SysDeptService {
         // 3.计算部门level
         dept.setLevel(LevelUtil.caculateLevel(getLevel(param.getParentId()), dept.getParentId()));
         mapper.insertSelective(dept);
+        sysLogService.saveDeptLog(null, dept);
     }
 
     @Override
@@ -74,12 +79,12 @@ public class SysDeptServiceImpl implements SysDeptService {
         // 2.更新之后的值
         SysDept after = param2Model(param);
 
-
-        //没有更新父节点
-        if (before.getParentId().equals(param.getParentId())) {
-            mapper.updateByPrimaryKeySelective(after);
-            return;
-        }
+//
+//        //没有更新父节点
+//        if (before.getParentId().equals(param.getParentId())) {
+//            mapper.updateByPrimaryKeySelective(after);
+//            return;
+//        }
         // 父节点 == 当前待更新对象
         if (after.getParentId().equals(after.getId())) {
             throw new ParamException(DeptResult.PARENT_ID_NOT_EQUALS_ID);
@@ -103,6 +108,8 @@ public class SysDeptServiceImpl implements SysDeptService {
         after.setLevel(LevelUtil.caculateLevel(getLevel(after.getParentId()), after.getParentId()));
         // 更新之后的值
         updateWithChild(before, after);
+
+        sysLogService.saveDeptLog(before, after);
     }
 
 

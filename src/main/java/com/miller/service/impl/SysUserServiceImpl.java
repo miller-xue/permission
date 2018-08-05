@@ -13,6 +13,7 @@ import com.miller.model.SysAcl;
 import com.miller.model.SysUser;
 import com.miller.param.UserParam;
 import com.miller.service.SysCoreService;
+import com.miller.service.SysLogService;
 import com.miller.service.SysUserService;
 import com.miller.util.BeanValidator;
 import com.miller.util.IpUtil;
@@ -40,6 +41,9 @@ public class SysUserServiceImpl implements SysUserService {
     @Resource
     private SysCoreService sysCoreService;
 
+    @Resource
+    private SysLogService sysLogService;
+
 
     @Override
     public void save(UserParam param) {
@@ -58,6 +62,7 @@ public class SysUserServiceImpl implements SysUserService {
         sysUser.setPassword(MD5Util.encrypt(PasswordUtil.randomPassword()));
         // TODO: sendEmail
         userMapper.insertSelective(sysUser);
+        sysLogService.saveUserLog(null, sysUser);
     }
 
     @Override
@@ -81,6 +86,7 @@ public class SysUserServiceImpl implements SysUserService {
         SysUser after = param2SysUser(param);
         // 更新
         userMapper.updateByPrimaryKeySelective(after);
+        sysLogService.saveUserLog(before, after);
 
     }
 

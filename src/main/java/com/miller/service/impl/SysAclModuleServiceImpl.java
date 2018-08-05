@@ -10,6 +10,7 @@ import com.miller.enums.result.AclModuleResult;
 import com.miller.model.SysAclModule;
 import com.miller.param.AclModuleParam;
 import com.miller.service.SysAclModuleService;
+import com.miller.service.SysLogService;
 import com.miller.util.BeanValidator;
 import com.miller.util.IpUtil;
 import com.miller.util.LevelUtil;
@@ -40,6 +41,9 @@ public class SysAclModuleServiceImpl implements SysAclModuleService {
     @Resource
     private SysAclMapper sysAclMapper;
 
+    @Resource
+    private SysLogService sysLogService;
+
     @Override
     public void save(AclModuleParam param) throws ParamException {
         // 1.必填参数校验
@@ -63,6 +67,7 @@ public class SysAclModuleServiceImpl implements SysAclModuleService {
 
 
         sysAclModuleMapper.insertSelective(sysAclModule);
+        sysLogService.saveAclModuleLog(null, sysAclModule);
     }
 
     @Override
@@ -88,10 +93,10 @@ public class SysAclModuleServiceImpl implements SysAclModuleService {
 
         SysAclModule after = param2Model(param);
         // 3.没有修改部门
-        if (after.getParentId().equals(before.getParentId())) {
-            sysAclModuleMapper.updateByPrimaryKeySelective(after);
-            return;
-        }
+//        if (after.getParentId().equals(before.getParentId())) {
+//            sysAclModuleMapper.updateByPrimaryKeySelective(after);
+//            return;
+//        }
 
         // 3.当前id父节点不能是自己
         if (after.getParentId().equals(after.getId())) {
@@ -119,6 +124,7 @@ public class SysAclModuleServiceImpl implements SysAclModuleService {
         }
 
         updateWithChild(before, after);
+        sysLogService.saveAclModuleLog(before, after);
     }
 
 

@@ -3,12 +3,18 @@ package com.miller.service.impl;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.miller.common.RequestHolder;
+import com.miller.constant.LogType;
+import com.miller.dao.SysLogMapper;
 import com.miller.dao.SysRoleUserMapper;
 import com.miller.dao.SysUserMapper;
+import com.miller.model.SysLog;
+import com.miller.model.SysLogWithBLOBs;
 import com.miller.model.SysRoleUser;
 import com.miller.model.SysUser;
+import com.miller.service.SysLogService;
 import com.miller.service.SysRoleUserService;
 import com.miller.util.IpUtil;
+import com.miller.util.JsonMapper;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +37,9 @@ public class SysRoleUserServiceImpl implements SysRoleUserService {
 
     @Resource
     private SysUserMapper sysUserMapper;
+
+    @Resource
+    private SysLogMapper sysLogMapper;
 
     @Override
     public List<SysUser> getListByRoleId(int roleId) {
@@ -61,7 +70,7 @@ public class SysRoleUserServiceImpl implements SysRoleUserService {
             }
         }
         updateRoleUsers(roleId, userIdList);
-
+        saveRoleUserLog(roleId, originUserIdList, userIdList);
     }
 
 
@@ -81,5 +90,19 @@ public class SysRoleUserServiceImpl implements SysRoleUserService {
         //增加
         sysRoleUserMapper.batchInsert(roleUserList);
 
+    }
+
+    public void saveRoleUserLog(int roleId, List<Integer> before, List<Integer> after) {
+        SysLogWithBLOBs sysLog = new SysLogWithBLOBs();
+        sysLog.setType(LogType.TYPE_ROLE_USER);
+        // 新增没有after
+        sysLog.setTargetId(roleId);
+        sysLog.setOldValue(before == null ? "" : JsonMapper.obj2String(before));
+        sysLog.setNewValue(after == null ? "" : JsonMapper.obj2String(after));
+        sysLog.setOperator(RequestHolder.getCurrentUser().getUsername());
+        sysLog.setOperatorIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
+        sysLog.setOperatorTime(new Date());
+        sysLog.setStatus(1);
+        sysLogMapper.insert(sysLog);
     }
 }

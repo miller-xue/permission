@@ -17,6 +17,7 @@ public enum  SysResult implements ResultEnum {
     INNER_ERROR(-1, "系统错误"),
     SUCCESS(0, "成功"),
     PARAM_ERROR(1, "参数不正确"),
+    PARAM_DATE_ERROR(3, "传入的日期格式有问题, 正确格式为yyyy-MM-dd HH:mm:ss"),
     ;
     private int code;
     private String msg;

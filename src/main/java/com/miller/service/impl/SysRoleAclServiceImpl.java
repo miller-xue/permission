@@ -3,10 +3,15 @@ package com.miller.service.impl;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.miller.common.RequestHolder;
+import com.miller.constant.LogType;
+import com.miller.dao.SysLogMapper;
 import com.miller.dao.SysRoleAclMapper;
+import com.miller.model.SysLogWithBLOBs;
 import com.miller.model.SysRoleAcl;
+import com.miller.service.SysLogService;
 import com.miller.service.SysRoleAclService;
 import com.miller.util.IpUtil;
+import com.miller.util.JsonMapper;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +30,9 @@ public class  SysRoleAclServiceImpl implements SysRoleAclService {
 
     @Resource
     private SysRoleAclMapper sysRoleAclMapper;
+
+    @Resource
+    private SysLogMapper sysLogMapper;
 
     @Override
     @Transactional
@@ -45,6 +53,7 @@ public class  SysRoleAclServiceImpl implements SysRoleAclService {
             }
         }
         updateRoleAcls(roleId, aclIdList);
+        saveRoleAclLog(roleId, originAclIdList, aclIdList);
     }
 
 
@@ -63,5 +72,19 @@ public class  SysRoleAclServiceImpl implements SysRoleAclService {
                     .operatorTime(new Date()).build());
         }
         sysRoleAclMapper.batchInsert(roleAclList);
+    }
+
+    private void saveRoleAclLog(int roleId, List<Integer> before, List<Integer> after) {
+        SysLogWithBLOBs sysLog = new SysLogWithBLOBs();
+        sysLog.setType(LogType.TYPE_ROLE_ACL);
+        // 新增没有after
+        sysLog.setTargetId(roleId);
+        sysLog.setOldValue(before == null ? "" : JsonMapper.obj2String(before));
+        sysLog.setNewValue(after == null ? "" : JsonMapper.obj2String(after));
+        sysLog.setOperator(RequestHolder.getCurrentUser().getUsername());
+        sysLog.setOperatorIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
+        sysLog.setOperatorTime(new Date());
+        sysLog.setStatus(1);
+        sysLogMapper.insert(sysLog);
     }
 }

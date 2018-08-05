@@ -10,8 +10,10 @@ import com.miller.enums.result.AclModuleResult;
 import com.miller.enums.result.AclResult;
 import com.miller.model.SysAcl;
 import com.miller.model.SysAclModule;
+import com.miller.model.SysLog;
 import com.miller.param.AclParam;
 import com.miller.service.SysAclService;
+import com.miller.service.SysLogService;
 import com.miller.util.BeanValidator;
 import com.miller.util.IpUtil;
 import org.springframework.beans.BeanUtils;
@@ -36,6 +38,10 @@ public class SysAclServiceImpl implements SysAclService {
     @Resource
     SysAclModuleMapper moduleMapper;
 
+
+    @Resource
+    private SysLogService sysLogService;
+
     @Override
     public void save(AclParam param) {
         // 1.参数校验
@@ -54,6 +60,7 @@ public class SysAclServiceImpl implements SysAclService {
         sysAcl.setCode(gererateCode());
 
         sysAclMapper.insertSelective(sysAcl);
+        sysLogService.saveAclLog(null, sysAcl);
     }
 
     @Override
@@ -76,6 +83,7 @@ public class SysAclServiceImpl implements SysAclService {
         }
         SysAcl after = param2Model(param);
         sysAclMapper.updateByPrimaryKeySelective(after);
+        sysLogService.saveAclLog(before, after);
     }
 
     @Override
