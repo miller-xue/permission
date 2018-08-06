@@ -84,8 +84,8 @@ public class SysRoleUserServiceImpl implements SysRoleUserService {
         for (int userId : userIdList) {
             roleUserList.add(SysRoleUser.builder().roleId(roleId).userId(userId)
                     .operator(RequestHolder.getCurrentUser().getUsername())
-                    .operatorIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()))
-                    .operatorTime(new Date()).build());
+                    .operateIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()))
+                    .operateTime(new Date()).build());
         }
         //增加
         sysRoleUserMapper.batchInsert(roleUserList);
@@ -100,8 +100,8 @@ public class SysRoleUserServiceImpl implements SysRoleUserService {
         sysLog.setOldValue(before == null ? "" : JsonMapper.obj2String(before));
         sysLog.setNewValue(after == null ? "" : JsonMapper.obj2String(after));
         sysLog.setOperator(RequestHolder.getCurrentUser().getUsername());
-        sysLog.setOperatorIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
-        sysLog.setOperatorTime(new Date());
+        sysLog.setOperateIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
+        sysLog.setOperateTime(new Date());
         sysLog.setStatus(1);
         sysLogMapper.insert(sysLog);
     }

@@ -68,8 +68,8 @@ public class  SysRoleAclServiceImpl implements SysRoleAclService {
         for (Integer aclId : aclIdList  ) {
             roleAclList.add(SysRoleAcl.builder().aclId(aclId).roleId(roleId)
                     .operator(RequestHolder.getCurrentUser().getUsername())
-                    .operatorIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()))
-                    .operatorTime(new Date()).build());
+                    .operateIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()))
+                    .operateTime(new Date()).build());
         }
         sysRoleAclMapper.batchInsert(roleAclList);
     }
@@ -82,8 +82,8 @@ public class  SysRoleAclServiceImpl implements SysRoleAclService {
         sysLog.setOldValue(before == null ? "" : JsonMapper.obj2String(before));
         sysLog.setNewValue(after == null ? "" : JsonMapper.obj2String(after));
         sysLog.setOperator(RequestHolder.getCurrentUser().getUsername());
-        sysLog.setOperatorIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
-        sysLog.setOperatorTime(new Date());
+        sysLog.setOperateIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
+        sysLog.setOperateTime(new Date());
         sysLog.setStatus(1);
         sysLogMapper.insert(sysLog);
     }

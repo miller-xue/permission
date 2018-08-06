@@ -197,8 +197,8 @@ public class SysRoleServiceImpl implements SysRoleService {
         SysRole sysRole = new SysRole();
         BeanUtils.copyProperties(param, sysRole);
         sysRole.setOperator(RequestHolder.getCurrentUser().getUsername());
-        sysRole.setOperatorIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
-        sysRole.setOperatorTime(new Date());
+        sysRole.setOperateIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
+        sysRole.setOperateTime(new Date());
         return sysRole;
     }
 

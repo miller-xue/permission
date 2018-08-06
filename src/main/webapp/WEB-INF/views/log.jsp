@@ -174,7 +174,7 @@
                             },
                             "showDate" :function () {
                                 return function (text, render) {
-                                    return new Date(this.operatorTime).Format("yyyy-MM-dd hh:mm:ss");
+                                    return new Date(this.operateTime).Format("yyyy-MM-dd hh:mm:ss");
                                 }
                             },
                             "showOldValue": function () {

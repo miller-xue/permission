@@ -12,12 +12,12 @@
     <result column="seq" property="seq" jdbcType="INTEGER" />
     <result column="remark" property="remark" jdbcType="VARCHAR" />
     <result column="operator" property="operator" jdbcType="VARCHAR" />
-    <result column="operator_time" property="operatorTime" jdbcType="TIMESTAMP" />
-    <result column="operator_ip" property="operatorIp" jdbcType="VARCHAR" />
+    <result column="operate_time" property="operateTime" jdbcType="TIMESTAMP" />
+    <result column="operate_ip" property="operateIp" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, code, name, acl_module_id, url, type, status, seq, remark, operator, operator_time, 
-    operator_ip
+    id, code, name, acl_module_id, url, type, status, seq, remark, operator, operate_time,
+    operate_ip
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
@@ -33,12 +33,12 @@
     insert into sys_acl (id, code, name, 
       acl_module_id, url, type, 
       status, seq, remark, 
-      operator, operator_time, operator_ip
+      operator, operate_time, operate_ip
       )
     values (#{id,jdbcType=INTEGER}, #{code,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, 
       #{aclModuleId,jdbcType=INTEGER}, #{url,jdbcType=VARCHAR}, #{type,jdbcType=INTEGER}, 
       #{status,jdbcType=INTEGER}, #{seq,jdbcType=INTEGER}, #{remark,jdbcType=VARCHAR}, 
-      #{operator,jdbcType=VARCHAR}, #{operatorTime,jdbcType=TIMESTAMP}, #{operatorIp,jdbcType=VARCHAR}
+      #{operator,jdbcType=VARCHAR}, #{operateTime,jdbcType=TIMESTAMP}, #{operateIp,jdbcType=VARCHAR}
       )
   </insert>
   <insert id="insertSelective" parameterType="com.miller.model.SysAcl" keyProperty="id" useGeneratedKeys="true" >
@@ -74,11 +74,11 @@
       <if test="operator != null" >
         operator,
       </if>
-      <if test="operatorTime != null" >
-        operator_time,
+      <if test="operateTime != null" >
+        operate_time,
       </if>
-      <if test="operatorIp != null" >
-        operator_ip,
+      <if test="operateIp != null" >
+        operate_ip,
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
@@ -112,11 +112,11 @@
       <if test="operator != null" >
         #{operator,jdbcType=VARCHAR},
       </if>
-      <if test="operatorTime != null" >
-        #{operatorTime,jdbcType=TIMESTAMP},
+      <if test="operateTime != null" >
+        #{operateTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="operatorIp != null" >
-        #{operatorIp,jdbcType=VARCHAR},
+      <if test="operateIp != null" >
+        #{operateIp,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -150,11 +150,11 @@
       <if test="operator != null" >
         operator = #{operator,jdbcType=VARCHAR},
       </if>
-      <if test="operatorTime != null" >
-        operator_time = #{operatorTime,jdbcType=TIMESTAMP},
+      <if test="operateTime != null" >
+        operate_time = #{operateTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="operatorIp != null" >
-        operator_ip = #{operatorIp,jdbcType=VARCHAR},
+      <if test="operateIp != null" >
+        operate_ip = #{operateIp,jdbcType=VARCHAR},
       </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
@@ -170,8 +170,8 @@
       seq = #{seq,jdbcType=INTEGER},
       remark = #{remark,jdbcType=VARCHAR},
       operator = #{operator,jdbcType=VARCHAR},
-      operator_time = #{operatorTime,jdbcType=TIMESTAMP},
-      operator_ip = #{operatorIp,jdbcType=VARCHAR}
+      operate_time = #{operateTime,jdbcType=TIMESTAMP},
+      operate_ip = #{operateIp,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
 

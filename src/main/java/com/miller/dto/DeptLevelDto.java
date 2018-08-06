@@ -33,9 +33,9 @@ public class DeptLevelDto extends BaseTree<DeptLevelDto> {
 
     private String operator;
 
-    private Date operatorTime;
+    private Date operateTime;
 
-    private String operatorIp;
+    private String operateIp;
 
     public static DeptLevelDto adapt(SysDept dept) {
         DeptLevelDto deptLevelDto = new DeptLevelDto();

@@ -175,8 +175,8 @@ public class SysDeptServiceImpl implements SysDeptService {
         SysDept after = new SysDept();
         BeanUtils.copyProperties(param, after);
         after.setOperator(RequestHolder.getCurrentUser().getUsername());
-        after.setOperatorIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
-        after.setOperatorTime(new Date());
+        after.setOperateIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
+        after.setOperateTime(new Date());
         return after;
     }
 }

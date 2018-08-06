@@ -145,8 +145,8 @@ public class SysUserServiceImpl implements SysUserService {
         SysUser user = new SysUser();
         BeanUtils.copyProperties(param, user);
         user.setOperator(RequestHolder.getCurrentUser().getUsername());
-        user.setOperatorIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
-        user.setOperatorTime(new Date());
+        user.setOperateIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
+        user.setOperateTime(new Date());
         return user;
     }
 }

@@ -67,7 +67,6 @@ public class AclControlFilter implements Filter {
             return;
         }
 
-        // TODO
         SysCoreService sysCoreService = SpringContextUtil.popBean(SysCoreService.class);
         if (!sysCoreService.hasUrlAcl(servletPath)) {
             log.info("{} visit {}, but no login, paramter:{}", JsonMapper.obj2String(sysUser), servletPath, JsonMapper.obj2String(requestMap));

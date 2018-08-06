@@ -2,6 +2,7 @@ package com.miller.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
@@ -18,9 +19,9 @@ public class SysRoleAcl {
 
     private String operator;
 
-    private Date operatorTime;
+    private Date operateTime;
 
-    private String operatorIp;
+    private String operateIp;
 
     public Integer getId() {
         return id;
@@ -54,19 +55,19 @@ public class SysRoleAcl {
         this.operator = operator == null ? null : operator.trim();
     }
 
-    public Date getOperatorTime() {
-        return operatorTime;
+    public Date getOperateTime() {
+        return operateTime;
     }
 
-    public void setOperatorTime(Date operatorTime) {
-        this.operatorTime = operatorTime;
+    public void setOperateTime(Date operateTime) {
+        this.operateTime = operateTime;
     }
 
-    public String getOperatorIp() {
-        return operatorIp;
+    public String getOperateIp() {
+        return operateIp;
     }
 
-    public void setOperatorIp(String operatorIp) {
-        this.operatorIp = operatorIp == null ? null : operatorIp.trim();
+    public void setOperateIp(String operateIp) {
+        this.operateIp = operateIp == null ? null : operateIp.trim();
     }
 }

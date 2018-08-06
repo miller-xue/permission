@@ -17,6 +17,7 @@ import com.miller.service.SysRoleUserService;
 import com.miller.util.BeanValidator;
 import com.miller.util.IpUtil;
 import com.miller.util.JsonMapper;
+import com.miller.util.SysUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.codehaus.jackson.type.TypeReference;
 import org.springframework.stereotype.Service;
@@ -57,7 +58,6 @@ public class SysLogServiceImpl implements SysLogService {
     @Resource
     private SysRoleUserService sysRoleUserService;
 
-    // TODO 没有做设置opertaxx 还有这个名字有问题
     @Override
     public void recover(int id) {
         SysLogWithBLOBs log = sysLogMapper.selectByPrimaryKey(id);
@@ -75,6 +75,7 @@ public class SysLogServiceImpl implements SysLogService {
                 }
                 SysDept afterDept = JsonMapper.string2Obj(log.getOldValue(), new TypeReference<SysDept>() {
                 });
+                SysUtil.invokeSetOperate(afterDept);
                 sysDeptMapper.updateByPrimaryKeySelective(afterDept);
                 saveDeptLog(beforeDept, afterDept);
                 break;
@@ -88,6 +89,7 @@ public class SysLogServiceImpl implements SysLogService {
                 }
                 SysUser afterUser = JsonMapper.string2Obj(log.getOldValue(), new TypeReference<SysUser>() {
                 });
+                SysUtil.invokeSetOperate(afterUser);
                 sysUserMapper.updateByPrimaryKeySelective(afterUser);
                 saveUserLog(beforeUser, afterUser);
                 break;
@@ -101,6 +103,7 @@ public class SysLogServiceImpl implements SysLogService {
                 }
                 SysAclModule afterAclModule = JsonMapper.string2Obj(log.getOldValue(), new TypeReference<SysAclModule>() {
                 });
+                SysUtil.invokeSetOperate(afterAclModule);
                 sysAclModuleMapper.updateByPrimaryKeySelective(afterAclModule);
                 saveAclModuleLog(beforeAclModule, afterAclModule);
                 break;
@@ -114,6 +117,7 @@ public class SysLogServiceImpl implements SysLogService {
                 }
                 SysAcl afterAcl = JsonMapper.string2Obj(log.getOldValue(), new TypeReference<SysAcl>() {
                 });
+                SysUtil.invokeSetOperate(afterAcl);
                 sysAclMapper.updateByPrimaryKeySelective(afterAcl);
                 saveAclLog(beforeAcl, afterAcl);
                 break;
@@ -127,6 +131,7 @@ public class SysLogServiceImpl implements SysLogService {
                 }
                 SysRole afterRole = JsonMapper.string2Obj(log.getOldValue(), new TypeReference<SysRole>() {
                 });
+                SysUtil.invokeSetOperate(afterRole);
                 sysRoleMapper.updateByPrimaryKeySelective(afterRole);
                 saveRoleLog(beforeRole, afterRole);
                 break;
@@ -212,8 +217,8 @@ public class SysLogServiceImpl implements SysLogService {
 
     private void setOperator(SysLogWithBLOBs log) {
         log.setOperator(RequestHolder.getCurrentUser().getUsername());
-        log.setOperatorIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
-        log.setOperatorTime(new Date());
+        log.setOperateIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
+        log.setOperateTime(new Date());
         log.setStatus(1);
     }
 

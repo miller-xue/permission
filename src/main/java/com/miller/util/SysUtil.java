@@ -1,10 +1,12 @@
 package com.miller.util;
 
 import com.google.common.collect.Maps;
+import com.miller.common.RequestHolder;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Field;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -61,5 +63,11 @@ public class SysUtil {
             return true;
         }
         return false;
+    }
+
+    public static void invokeSetOperate(Object object) {
+        ConvertUtil.invokeSetMethod(object, "operator", RequestHolder.getCurrentUser().getUsername());
+        ConvertUtil.invokeSetMethod(object, "operateIp", IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
+        ConvertUtil.invokeSetMethod(object, "operateTime", new Date());
     }
 }

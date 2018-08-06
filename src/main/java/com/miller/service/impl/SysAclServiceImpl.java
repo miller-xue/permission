@@ -105,8 +105,8 @@ public class SysAclServiceImpl implements SysAclService {
         SysAcl sysAcl = new SysAcl();
         BeanUtils.copyProperties(param, sysAcl);
         sysAcl.setOperator(RequestHolder.getCurrentUser().getUsername());
-        sysAcl.setOperatorIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
-        sysAcl.setOperatorTime(new Date());
+        sysAcl.setOperateIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
+        sysAcl.setOperateTime(new Date());
         return sysAcl;
     }
 

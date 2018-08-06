@@ -1,8 +1,14 @@
-
 package com.miller.model;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class SysLog {
     private Integer id;
 
@@ -12,9 +18,9 @@ public class SysLog {
 
     private String operator;
 
-    private Date operatorTime;
+    private Date operateTime;
 
-    private String operatorIp;
+    private String operateIp;
 
     private Integer status;
 
@@ -50,20 +56,20 @@ public class SysLog {
         this.operator = operator == null ? null : operator.trim();
     }
 
-    public Date getOperatorTime() {
-        return operatorTime;
+    public Date getOperateTime() {
+        return operateTime;
     }
 
-    public void setOperatorTime(Date operatorTime) {
-        this.operatorTime = operatorTime;
+    public void setOperateTime(Date operateTime) {
+        this.operateTime = operateTime;
     }
 
-    public String getOperatorIp() {
-        return operatorIp;
+    public String getOperateIp() {
+        return operateIp;
     }
 
-    public void setOperatorIp(String operatorIp) {
-        this.operatorIp = operatorIp == null ? null : operatorIp.trim();
+    public void setOperateIp(String operateIp) {
+        this.operateIp = operateIp == null ? null : operateIp.trim();
     }
 
     public Integer getStatus() {
