@@ -22,7 +22,7 @@ import java.util.List;
  * @author Miller
  */
 @Deprecated
-public class SysCoreServiceImplDemo implements SysCoreService {
+public abstract class SysCoreServiceImplDemo implements SysCoreService {
 
     @Resource
     private SysAclMapper sysAclMapper;

@@ -1,21 +1,31 @@
 package com.miller.controller;
 
+import com.miller.common.RequestHolder;
+import com.miller.common.Result;
+import com.miller.dto.AclModuleLevelDto;
+import com.miller.dto.Menu;
 import com.miller.model.SysUser;
+import com.miller.service.SysCoreService;
+import com.miller.service.SysMenuService;
 import com.miller.service.SysUserService;
 import com.miller.util.MD5Util;
+import com.miller.util.ResultUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Created by miller on 2018/7/26
  * TODO 登陆Controller
+ *
  * @author Miller
  */
 @Controller
@@ -24,6 +34,10 @@ public class UserController {
 
     @Autowired
     private SysUserService userService;
+
+    @Autowired
+    private SysMenuService sysMenuService;
+
 
     @RequestMapping(value = "/login")
     public void login(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
@@ -65,6 +79,16 @@ public class UserController {
     @RequestMapping(value = "/logout")
     public void logout(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.getSession().invalidate();
-        response.sendRedirect("signin.jsp") ;
+        response.sendRedirect("signin.jsp");
+    }
+
+
+    @RequestMapping(value = "/sys/menu")
+    @ResponseBody
+    public Result menuTree() {
+        SysUser currentUser = RequestHolder.getCurrentUser();
+
+        List<Menu> menus = sysMenuService.changeTreeToMenu(userService.userAclTree(currentUser.getId()));
+        return ResultUtil.buildSuccess(menus);
     }
 }

@@ -79,75 +79,7 @@
         </script>
 
 
-        <ul class="nav nav-list">
-            <li class="active">
-                <a class="popstyle" href="/sys/user/page.do" target="_blank">
-                    <i class="menu-icon fa fa-tachometer"></i>
-                    <span class="menu-text"> 首页 </span>
-                </a>
-                <b class="arrow"></b>
-            </li>
-            <li class="">
-                <a href="#" class="dropdown-toggle">
-                    <i class="menu-icon fa fa-desktop"></i>
-                    <span class="menu-text"> 权限管理 </span>
-                    <b class="arrow fa fa-angle-down"></b>
-                </a>
-
-                <b class="arrow"></b>
-
-                <ul class="submenu">
-                    <li class="">
-                        <a class="popstyle" href="/sys/dept/page" target="_blank">
-                            <i class="menu-icon fa fa-caret-right"></i>
-                            用户管理
-                        </a>
-                        <b class="arrow"></b>
-                    </li>
-                    <li class="">
-                        <a class="popstyle" href="/sys/role/page" target="_blank">
-                            <i class="menu-icon fa fa-caret-right"></i>
-                            角色管理
-                        </a>
-                        <b class="arrow"></b>
-                    </li>
-                    <li class="">
-                        <a class="popstyle" href="/sys/aclModule/page" target="_blank">
-                            <i class="menu-icon fa fa-caret-right"></i>
-                            权限管理
-                        </a>
-                        <b class="arrow"></b>
-                    </li>
-                    <li class="">
-                        <a class="popstyle" href="/sys/log/log" target="_blank">
-                            <i class="menu-icon fa fa-caret-right"></i>
-                            权限更新记录
-                        </a>
-                        <b class="arrow"></b>
-                    </li>
-                </ul>
-            </li>
-
-            <li class="">
-                <a href="#" class="dropdown-toggle">
-                    <i class="menu-icon fa fa-desktop"></i>
-                    <span class="menu-text"> 系统管理 </span>
-                    <b class="arrow fa fa-angle-down"></b>
-                </a>
-
-                <b class="arrow"></b>
-
-                <ul class="submenu">
-                    <li class="">
-                        <a class="popstyle" href="/config/config.page" target="_blank">
-                            <i class="menu-icon fa fa-caret-right"></i>
-                            全局配置管理
-                        </a>
-                        <b class="arrow"></b>
-                    </li>
-                </ul>
-            </li>
-        </ul>
+        <ul class="nav nav-list"></ul>
         <!-- /.nav-list -->
 
         <div class="sidebar-toggle sidebar-collapse" id="sidebar-collapse">
@@ -174,6 +106,37 @@
 
 </div>
 <!-- /.main-container -->
+
+<script id="secondMenuTemplate" type="x-tmpl-mustache">
+<b class="arrow"></b>
+<ul class="submenu">
+{{#subList}}
+<li class="">
+   <a class="popstyle" href="{{url}}" target="_blank">
+       <i class="menu-icon fa fa-caret-right"></i>
+       {{name}}
+   </a>
+   <b class="arrow"></b>
+</li>
+{{/subList}}
+</ul>
+</script>
+
+<script id="urlMenuTemplate" type="x-tmpl-mustache">
+<a class="popstyle" href="{{url}}" target="_blank">
+   <i class="menu-icon fa fa-tachometer"></i>
+   {{name}}
+</a>
+<b class="arrow"></b>
+</script>
+
+<script id="emptyMenuTemplate" type="x-tmpl-mustache">
+<a href="#" class="dropdown-toggle">
+   <i class="menu-icon fa fa-desktop"></i>
+   <span class="menu-text"> {{name}} </span>
+   <b class="arrow fa fa fa-caret-right"></b>
+</a>
+</script>
 
 
 <!-- basic scripts -->
@@ -243,6 +206,62 @@
             $("iframe").attr(
                     'src',
                     $this.attr("data-value")
+            );
+        });
+
+        $(function () {
+            var emptyMenuTemplate =  $('#emptyMenuTemplate').html();
+            var urlMenuTemplate =  $('#urlMenuTemplate').html();
+            var secondMenuTemplate =  $('#secondMenuTemplate').html();
+            $.ajax({
+                url: '/sys/menu',
+                success: function (result) {
+                    if(result.result) {
+                        var menuList = result.data;
+                        $(menuList).each(function (i,firstMenu) {
+                            if(firstMenu.url) { // 如果首层就有url的话
+                                var appendFirst = Mustache.render(urlMenuTemplate, firstMenu);
+                                $(".nav-list").append("<li class=''>" + appendFirst + "</li>");
+                            }else {
+                                var appendFirst = Mustache.render(emptyMenuTemplate, firstMenu);
+                                var appendSend = Mustache.render(secondMenuTemplate, {
+                                    subList: firstMenu.subList
+                                });
+                                $(".nav-list").append('<li class="">' + appendFirst + appendSend + "</li>");
+                            }
+                            handleCommonBehavior();
+                        })
+
+                    }else {
+                        showMessage("加载菜单", result.msg, false);
+                    }
+                }
+            });
+        });
+
+        function handleCommonBehavior() {
+            $(".popstyle").removeAttr("target");
+            $(".popstyle").each(function () {
+                var $this = $(this);
+                tmp = $this.attr("href");
+                $this.attr("data", tmp);
+                $this.attr("href", "javascript:void(0)");
+            });
+
+            $(".popstyle").click(function () {
+                var $this = $(this);
+                $("iframe").attr(
+                    'src',
+                    $this.attr("data")
+                );
+            });
+        }
+
+        $(".direct").click(function () {
+            var $this = $(this);
+            $("iframe").attr(
+                'src',
+                $this.attr("data-value")
             );
         });
     });
