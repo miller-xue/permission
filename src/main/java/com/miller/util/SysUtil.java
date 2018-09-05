@@ -58,7 +58,6 @@ public class SysUtil {
     }
 
     public static boolean isAjax(HttpServletRequest request) {
-        String xReq = request.getHeader("X-Requested-With");
         return "XMLHttpRequest".equalsIgnoreCase(request.getHeader("X-Requested-With")
     }
 
